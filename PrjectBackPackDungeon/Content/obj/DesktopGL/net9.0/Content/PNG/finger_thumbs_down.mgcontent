@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PipelineBuildEvent xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <SourceFile>C:/Users/tastet/RiderProjects/MonoGameProject2/PrjectBackPackDungeon/Content/PNG/finger_thumbs_down.png</SourceFile>
+  <SourceTime>2026-01-21T15:32:12.3109369+01:00</SourceTime>
+  <DestFile>C:/Users/tastet/RiderProjects/MonoGameProject2/PrjectBackPackDungeon/Content/bin/DesktopGL/Content/PNG/finger_thumbs_down.xnb</DestFile>
+  <DestTime>2026-01-21T15:45:48.0871029+01:00</DestTime>
+  <Importer>TextureImporter</Importer>
+  <ImporterTime>2025-10-20T16:25:32+02:00</ImporterTime>
+  <Processor>TextureProcessor</Processor>
+  <ProcessorTime>2025-10-20T16:25:32+02:00</ProcessorTime>
+  <Dependencies />
+  <BuildAsset />
+  <BuildOutput />
+</PipelineBuildEvent>

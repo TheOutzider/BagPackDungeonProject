@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SourceFileCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Profile>Reach</Profile>
+  <Platform>DesktopGL</Platform>
+  <Config />
+  <SourceFiles>
+    <File>C:/Users/tastet/RiderProjects/MonoGameProject2/PrjectBackPackDungeon/Content/MainFont.spritefont</File>
+    <File>C:/Users/tastet/RiderProjects/MonoGameProject2/PrjectBackPackDungeon/Content/TitleFont.spritefont</File>
+    <File>C:/Users/tastet/RiderProjects/MonoGameProject2/PrjectBackPackDungeon/Content/Fonts/CloisterBlack.spritefont</File>
+    <File>C:/Users/tastet/RiderProjects/MonoGameProject2/PrjectBackPackDungeon/Content/PNG/title_logo.png</File>
+    <File>C:/Users/tastet/RiderProjects/MonoGameProject2/PrjectBackPackDungeon/Content/PNG/nouvellepartie_idle.png</File>
+    <File>C:/Users/tastet/RiderProjects/MonoGameProject2/PrjectBackPackDungeon/Content/PNG/nouvellepartie_hover.png</File>
+    <File>C:/Users/tastet/RiderProjects/MonoGameProject2/PrjectBackPackDungeon/Content/PNG/option_idle.png</File>
+    <File>C:/Users/tastet/RiderProjects/MonoGameProject2/PrjectBackPackDungeon/Content/PNG/option_hover.png</File>
+    <File>C:/Users/tastet/RiderProjects/MonoGameProject2/PrjectBackPackDungeon/Content/PNG/quitter_idle.png</File>
+    <File>C:/Users/tastet/RiderProjects/MonoGameProject2/PrjectBackPackDungeon/Content/PNG/quitter_hover.png</File>
+    <File>C:/Users/tastet/RiderProjects/MonoGameProject2/PrjectBackPackDungeon/Content/PNG/cursor_normal.png</File>
+    <File>C:/Users/tastet/RiderProjects/MonoGameProject2/PrjectBackPackDungeon/Content/PNG/cursor_clicked.png</File>
+    <File>C:/Users/tastet/RiderProjects/MonoGameProject2/PrjectBackPackDungeon/Content/PNG/finger_pointing_left.png</File>
+    <File>C:/Users/tastet/RiderProjects/MonoGameProject2/PrjectBackPackDungeon/Content/PNG/finger_pointing_right.png</File>
+    <File>C:/Users/tastet/RiderProjects/MonoGameProject2/PrjectBackPackDungeon/Content/PNG/arm_strong_left.png</File>
+    <File>C:/Users/tastet/RiderProjects/MonoGameProject2/PrjectBackPackDungeon/Content/PNG/arm_strong_right.png</File>
+    <File>C:/Users/tastet/RiderProjects/MonoGameProject2/PrjectBackPackDungeon/Content/PNG/finger_thumbs_up.png</File>
+    <File>C:/Users/tastet/RiderProjects/MonoGameProject2/PrjectBackPackDungeon/Content/PNG/finger_thumbs_down.png</File>
+    <File>C:/Users/tastet/RiderProjects/MonoGameProject2/PrjectBackPackDungeon/Content/PNG/dice_d4.png</File>
+    <File>C:/Users/tastet/RiderProjects/MonoGameProject2/PrjectBackPackDungeon/Content/PNG/dice_d6.png</File>
+    <File>C:/Users/tastet/RiderProjects/MonoGameProject2/PrjectBackPackDungeon/Content/PNG/dice_d8.png</File>
+    <File>C:/Users/tastet/RiderProjects/MonoGameProject2/PrjectBackPackDungeon/Content/PNG/dice_d10.png</File>
+    <File>C:/Users/tastet/RiderProjects/MonoGameProject2/PrjectBackPackDungeon/Content/PNG/dice_d12.png</File>
+    <File>C:/Users/tastet/RiderProjects/MonoGameProject2/PrjectBackPackDungeon/Content/PNG/dice_d20.png</File>
+  </SourceFiles>
+  <DestFiles>
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+  </DestFiles>
+</SourceFileCollection>

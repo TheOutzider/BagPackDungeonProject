@@ -1,0 +1,140 @@
+
+#----------------------------- Global Properties ----------------------------#
+
+/outputDir:bin/$(Platform)
+/intermediateDir:obj/$(Platform)
+/platform:DesktopGL
+/config:
+/profile:Reach
+/compress:False
+
+#-------------------------------- References --------------------------------#
+
+
+#---------------------------------- Content ---------------------------------#
+
+#begin MainFont.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:MainFont.spritefont
+
+#begin TitleFont.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:TitleFont.spritefont
+
+#begin Fonts/CloisterBlack.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:Fonts/CloisterBlack.spritefont
+
+#begin PNG/title_logo.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:PNG/title_logo.png
+
+#begin PNG/nouvellepartie_idle.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:PNG/nouvellepartie_idle.png
+
+#begin PNG/nouvellepartie_hover.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:PNG/nouvellepartie_hover.png
+
+#begin PNG/option_idle.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:PNG/option_idle.png
+
+#begin PNG/option_hover.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:PNG/option_hover.png
+
+#begin PNG/quitter_idle.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:PNG/quitter_idle.png
+
+#begin PNG/quitter_hover.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:PNG/quitter_hover.png
+
+#begin PNG/cursor_normal.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:PNG/cursor_normal.png
+
+#begin PNG/cursor_clicked.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:PNG/cursor_clicked.png
+
+#begin PNG/finger_pointing_left.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:PNG/finger_pointing_left.png
+
+#begin PNG/finger_pointing_right.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:PNG/finger_pointing_right.png
+
+#begin PNG/arm_strong_left.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:PNG/arm_strong_left.png
+
+#begin PNG/arm_strong_right.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:PNG/arm_strong_right.png
+
+#begin PNG/finger_thumbs_up.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:PNG/finger_thumbs_up.png
+
+#begin PNG/finger_thumbs_down.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:PNG/finger_thumbs_down.png
+
+#begin PNG/dice_d4.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:PNG/dice_d4.png
+
+#begin PNG/dice_d6.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:PNG/dice_d6.png
+
+#begin PNG/dice_d8.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:PNG/dice_d8.png
+
+#begin PNG/dice_d10.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:PNG/dice_d10.png
+
+#begin PNG/dice_d12.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:PNG/dice_d12.png
+
+#begin PNG/dice_d20.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:PNG/dice_d20.png
