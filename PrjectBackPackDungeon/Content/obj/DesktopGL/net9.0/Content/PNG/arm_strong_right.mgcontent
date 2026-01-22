@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PipelineBuildEvent xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <SourceFile>C:/Users/tastet/RiderProjects/MonoGameProject2/PrjectBackPackDungeon/Content/PNG/arm_strong_right.png</SourceFile>
-  <SourceTime>2026-01-21T15:30:41.7992551+01:00</SourceTime>
-  <DestFile>C:/Users/tastet/RiderProjects/MonoGameProject2/PrjectBackPackDungeon/Content/bin/DesktopGL/Content/PNG/arm_strong_right.xnb</DestFile>
-  <DestTime>2026-01-21T15:45:48.0368886+01:00</DestTime>
+  <SourceFile>C:/Users/outzi/RiderProjects/BagPackDungeonProject/PrjectBackPackDungeon/Content/PNG/arm_strong_right.png</SourceFile>
+  <SourceTime>2026-01-21T20:19:14.8695774+01:00</SourceTime>
+  <DestFile>C:/Users/outzi/RiderProjects/BagPackDungeonProject/PrjectBackPackDungeon/Content/bin/DesktopGL/Content/PNG/arm_strong_right.xnb</DestFile>
+  <DestTime>2026-01-21T20:28:37.9456937+01:00</DestTime>
   <Importer>TextureImporter</Importer>
-  <ImporterTime>2025-10-20T16:25:32+02:00</ImporterTime>
+  <ImporterTime>2024-08-16T19:05:56+02:00</ImporterTime>
   <Processor>TextureProcessor</Processor>
-  <ProcessorTime>2025-10-20T16:25:32+02:00</ProcessorTime>
+  <ProcessorTime>2024-08-16T19:05:56+02:00</ProcessorTime>
   <Dependencies />
   <BuildAsset />
   <BuildOutput />

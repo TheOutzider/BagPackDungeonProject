@@ -46,6 +46,10 @@ public class Item
     public Color Color { get; set; }
     public DiceType DiceType { get; set; }
     
+    // Effets de Statut (Nouveau)
+    public StatusEffectType? EffectType { get; set; }
+    public int EffectValue { get; set; }
+    
     // Stats de Base (Fixes)
     public int BaseStr { get; set; }
     public int BaseDex { get; set; }

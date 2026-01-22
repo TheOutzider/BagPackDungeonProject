@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -6,21 +8,24 @@ namespace PrjectBackPackDungeon;
 
 public class Enemy
 {
-    public string Name { get; private set; }
-    public int Hp { get; private set; }
-    public int MaxHp { get; private set; }
+    public string Name { get; set; }
+    public int Hp { get; set; }
+    public int MaxHp { get; set; }
     
-    public int MinDamage { get; private set; }
-    public int MaxDamage { get; private set; }
+    public int MinDamage { get; set; }
+    public int MaxDamage { get; set; }
+    
+    public Color Tint { get; set; } = Color.White;
+    public List<StatusEffect> Effects { get; private set; } = new List<StatusEffect>();
+    public List<EnemyAbility> Abilities { get; private set; } = new List<EnemyAbility>();
     
     public Rectangle Bounds { get; set; }
     private Texture2D _texture;
     private SpriteFont _font;
     private Random _random;
 
-    // Animation
     private float _scale = 1.0f;
-    private Color _color = Color.White;
+    private Color _currentColor = Color.White;
     private float _flashTime = 0f;
     private Vector2 _shakeOffset = Vector2.Zero;
     private float _shakeTime = 0f;
@@ -37,49 +42,123 @@ public class Enemy
         _font = font;
         _random = new Random();
 
-        _texture = new Texture2D(graphicsDevice, 1, 1);
-        _texture.SetData(new[] { Color.White });
+        if (graphicsDevice != null)
+        {
+            _texture = new Texture2D(graphicsDevice, 1, 1);
+            _texture.SetData(new[] { Color.White });
+        }
         
         Bounds = new Rectangle(0, 0, 100, 100);
+        
+        // Capacité par défaut
+        Abilities.Add(new EnemyAbility("Attack", AbilityType.Attack, 0));
+    }
+
+    public EnemyAbility ChooseAbility()
+    {
+        // Si PV bas, plus de chance de se soigner si possible
+        if (Hp < MaxHp * 0.3f)
+        {
+            var heal = Abilities.FirstOrDefault(a => a.Type == AbilityType.Heal);
+            if (heal != null && _random.NextDouble() < 0.6) return heal;
+        }
+        
+        return Abilities[_random.Next(Abilities.Count)];
+    }
+
+    public void ApplyEffect(StatusEffectType type, int duration, int intensity = 1)
+    {
+        var existing = Effects.FirstOrDefault(e => e.Type == type);
+        if (existing != null)
+        {
+            existing.Duration += duration;
+            existing.Intensity = Math.Max(existing.Intensity, intensity);
+        }
+        else
+        {
+            Effects.Add(new StatusEffect(type, duration, intensity));
+        }
+    }
+
+    public int ProcessEffects()
+    {
+        int totalDamage = 0;
+        var toRemove = new List<StatusEffect>();
+
+        foreach (var effect in Effects)
+        {
+            switch (effect.Type)
+            {
+                case StatusEffectType.Poison:
+                    totalDamage += effect.Intensity;
+                    break;
+                case StatusEffectType.Regen:
+                    Hp = Math.Min(Hp + effect.Intensity, MaxHp);
+                    break;
+            }
+            
+            effect.Duration--;
+            if (effect.Duration <= 0) toRemove.Add(effect);
+        }
+
+        foreach (var e in toRemove) Effects.Remove(e);
+        if (totalDamage > 0) TakeDamage(totalDamage);
+        return totalDamage;
     }
 
     public void TakeDamage(int amount)
     {
-        Hp -= amount;
+        int finalDamage = amount;
+        var shield = Effects.FirstOrDefault(e => e.Type == StatusEffectType.Shield);
+        if (shield != null)
+        {
+            if (shield.Intensity >= finalDamage)
+            {
+                shield.Intensity -= finalDamage;
+                finalDamage = 0;
+            }
+            else
+            {
+                finalDamage -= shield.Intensity;
+                Effects.Remove(shield);
+            }
+        }
+
+        if (Effects.Any(e => e.Type == StatusEffectType.Vulnerable))
+            finalDamage = (int)(finalDamage * 1.5f);
+
+        Hp -= finalDamage;
         if (Hp < 0) Hp = 0;
         
-        // Feedback
-        _scale = 1.2f; // Punch
-        _flashTime = 0.2f; // Flash rouge
-        _shakeTime = 0.3f; // Shake
+        _scale = 1.2f;
+        _flashTime = 0.2f;
+        _shakeTime = 0.3f;
     }
 
-    public int Attack()
+    public int GetAttackDamage()
     {
-        // Feedback attaque
         _scale = 1.1f;
-        return _random.Next(MinDamage, MaxDamage + 1);
+        int dmg = _random.Next(MinDamage, MaxDamage + 1);
+        if (Effects.Any(e => e.Type == StatusEffectType.Weak))
+            dmg = (int)(dmg * 0.75f);
+        return dmg;
     }
     
     public void Update(GameTime gameTime)
     {
         float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
-        
-        // Retour à l'échelle normale (Elasticité)
         _scale = MathHelper.Lerp(_scale, 1.0f, 10f * dt);
         
-        // Flash
         if (_flashTime > 0)
         {
             _flashTime -= dt;
-            _color = Color.Red;
+            _currentColor = Color.Red;
         }
         else
         {
-            _color = Color.White;
+            _currentColor = Tint;
         }
         
-        // Shake
         if (_shakeTime > 0)
         {
             _shakeTime -= dt;
@@ -93,44 +172,30 @@ public class Enemy
 
     public void Draw(SpriteBatch spriteBatch)
     {
-        if (IsDead) return;
+        if (IsDead || _texture == null) return;
 
-        // Calcul du rectangle transformé
         Vector2 center = new Vector2(Bounds.Center.X, Bounds.Center.Y);
         Vector2 size = new Vector2(Bounds.Width, Bounds.Height) * _scale;
         Vector2 pos = center - (size / 2) + _shakeOffset;
-        
         Rectangle drawRect = new Rectangle((int)pos.X, (int)pos.Y, (int)size.X, (int)size.Y);
 
-        // Dessin de l'ennemi
-        spriteBatch.Draw(_texture, drawRect, _color);
+        spriteBatch.Draw(_texture, drawRect, _currentColor);
         
-        // Nom de l'ennemi
         if (_font != null)
         {
             Vector2 textSize = _font.MeasureString(Name);
-            Vector2 textPos = new Vector2(center.X - textSize.X / 2, drawRect.Top - 35);
-            spriteBatch.DrawString(_font, Name, textPos, Color.White);
+            spriteBatch.DrawString(_font, Name, new Vector2(center.X - textSize.X / 2, drawRect.Top - 35), Color.White);
+            
+            string effectsText = string.Join(" ", Effects.Select(e => $"[{e.Type.ToString().Substring(0,1)}:{e.Intensity}]"));
+            if (!string.IsNullOrEmpty(effectsText))
+                spriteBatch.DrawString(_font, effectsText, new Vector2(drawRect.Left, drawRect.Bottom + 5), Color.Yellow, 0f, Vector2.Zero, 0.8f, SpriteEffects.None, 0f);
         }
         
-        // Barre de vie
         int barWidth = (int)size.X;
         int barHeight = 10;
         int barY = drawRect.Top - 15;
-        
         spriteBatch.Draw(_texture, new Rectangle((int)pos.X, barY, barWidth, barHeight), Color.Gray);
         float ratio = (float)Hp / MaxHp;
         spriteBatch.Draw(_texture, new Rectangle((int)pos.X, barY, (int)(barWidth * ratio), barHeight), Color.Green);
-        
-        // Texte PV
-        if (_font != null)
-        {
-            string hpText = $"{Hp}/{MaxHp}";
-            Vector2 hpSize = _font.MeasureString(hpText);
-            spriteBatch.DrawString(_font, hpText, new Vector2(center.X - hpSize.X / 2, barY - 2), Color.White);
-            
-            string dmgText = $"ATK: {MinDamage}-{MaxDamage}";
-            spriteBatch.DrawString(_font, dmgText, new Vector2(drawRect.Right + 10, center.Y), Color.Red);
-        }
     }
 }

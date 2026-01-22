@@ -27,6 +27,13 @@
 /processorParam:TextureFormat=Compressed
 /build:TitleFont.spritefont
 
+#begin Fonts/Alagard.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:Fonts/Alagard.spritefont
+
 #begin Fonts/CloisterBlack.spritefont
 /importer:FontDescriptionImporter
 /processor:FontDescriptionProcessor
@@ -138,3 +145,146 @@
 /importer:TextureImporter
 /processor:TextureProcessor
 /build:PNG/dice_d20.png
+
+#begin PNG/room_battle.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:PNG/room_battle.png
+
+#begin PNG/room_elite.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:PNG/room_elite.png
+
+#begin PNG/room_boss.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:PNG/room_boss.png
+
+#begin PNG/room_shop.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:PNG/room_shop.png
+
+#begin PNG/room_rest.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:PNG/room_rest.png
+
+#begin PNG/item_common.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:PNG/item_common.png
+
+#begin PNG/item_magic.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:PNG/item_magic.png
+
+#begin PNG/item_rare.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:PNG/item_rare.png
+
+#begin PNG/item_unique.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:PNG/item_unique.png
+
+#begin PNG/bag_inventory.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:PNG/bag_inventory.png
+
+# Portraits Warrior
+#begin PNG/portrait_warrior_idle.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:PNG/portrait_warrior_idle.png
+
+#begin PNG/portrait_warrior_attack.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:PNG/portrait_warrior_attack.png
+
+#begin PNG/portrait_warrior_hit.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:PNG/portrait_warrior_hit.png
+
+#begin PNG/portrait_warrior_heal.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:PNG/portrait_warrior_heal.png
+
+#begin PNG/portrait_warrior_minus_50.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:PNG/portrait_warrior_minus_50.png
+
+#begin PNG/portrait_warrior_minus_25.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:PNG/portrait_warrior_minus_25.png
+
+# Portraits Mage
+#begin PNG/portrait_mage_idle.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:PNG/portrait_mage_idle.png
+
+#begin PNG/portrait_mage_attack.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:PNG/portrait_mage_attack.png
+
+#begin PNG/portrait_mage_hit.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:PNG/portrait_mage_hit.png
+
+#begin PNG/portrait_mage_heal.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:PNG/portrait_mage_heal.png
+
+#begin PNG/portrait_mage_minus_50.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:PNG/portrait_mage_minus_50.png
+
+#begin PNG/portrait_mage_minus_25.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:PNG/portrait_mage_minus_25.png
+
+# Portraits Rogue
+#begin PNG/portrait_rogue_idle.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:PNG/portrait_rogue_idle.png
+
+#begin PNG/portrait_rogue_attack.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:PNG/portrait_rogue_attack.png
+
+#begin PNG/portrait_rogue_hit.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:PNG/portrait_rogue_hit.png
+
+#begin PNG/portrait_rogue_heal.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:PNG/portrait_rogue_heal.png
+
+#begin PNG/portrait_rogue_minus_50.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:PNG/portrait_rogue_minus_50.png
+
+#begin PNG/portrait_rogue_minus_25.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:PNG/portrait_rogue_minus_25.png

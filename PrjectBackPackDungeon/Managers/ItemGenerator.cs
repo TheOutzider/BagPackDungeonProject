@@ -31,7 +31,6 @@ public static class ItemGenerator
         new ItemBase { Name = "Mace", Width = 2, Height = 2, BaseColor = Color.DarkGray, BaseDice = DiceType.D8_Basic, Type = ItemType.Weapon },
         new ItemBase { Name = "Longsword", Width = 1, Height = 4, BaseColor = Color.SteelBlue, BaseDice = DiceType.D8_Basic, Type = ItemType.Weapon },
         new ItemBase { Name = "Battleaxe", Width = 2, Height = 3, BaseColor = Color.IndianRed, BaseDice = DiceType.D10_Basic, Type = ItemType.Weapon },
-        new ItemBase { Name = "Warhammer", Width = 2, Height = 3, BaseColor = Color.DarkSlateGray, BaseDice = DiceType.D12_Basic, Type = ItemType.Weapon },
         new ItemBase { Name = "Staff", Width = 1, Height = 3, BaseColor = Color.Purple, BaseDice = DiceType.D6_Ice, Type = ItemType.Weapon },
         
         // Armors
@@ -42,7 +41,6 @@ public static class ItemGenerator
         // Accessories
         new ItemBase { Name = "Ring", Width = 1, Height = 1, BaseColor = Color.Gold, BaseDice = DiceType.None, Type = ItemType.Accessory },
         new ItemBase { Name = "Amulet", Width = 1, Height = 1, BaseColor = Color.Cyan, BaseDice = DiceType.None, Type = ItemType.Accessory },
-        new ItemBase { Name = "Tome", Width = 2, Height = 2, BaseColor = Color.Brown, BaseDice = DiceType.D6_Ice, Type = ItemType.Accessory },
         
         // Gems
         new ItemBase { Name = "Ruby", Width = 1, Height = 1, BaseColor = Color.Red, BaseDice = DiceType.None, Type = ItemType.Gem, SynStr = 2, SynTarget = ItemType.Weapon },
@@ -50,10 +48,8 @@ public static class ItemGenerator
         new ItemBase { Name = "Emerald", Width = 1, Height = 1, BaseColor = Color.Green, BaseDice = DiceType.None, Type = ItemType.Gem, SynDex = 2, SynTarget = ItemType.Weapon }
     };
 
-    private static string[] _shoddyPrefixes = { "Rusty", "Old", "Broken", "Chipped", "Dusty", "Dull" };
-    private static string[] _prefixes = { "Burning", "Frozen", "Heavy", "Swift", "Arcane", "Brutal", "Savage", "Ancient", "Cursed", "Divine", "Dark" };
-    private static string[] _suffixes = { "of Strength", "of Dexterity", "of Wisdom", "of Luck", "of Doom", "of the Bear", "of the Eagle", "of the Owl", "of Hell", "of Heavens" };
-    private static string[] _uniqueNames = { "The World Breaker", "Thunderfury", "Soul Eater", "Heart of the Mountain", "Whisper of the Void", "Godslayer", "Excalibur's Cousin" };
+    private static string[] _prefixes = { "Burning", "Frozen", "Swift", "Arcane", "Brutal", "Savage", "Divine", "Dark", "Radiant", "Vampiric", "Venomous" };
+    private static string[] _suffixes = { "of Strength", "of Dexterity", "of Wisdom", "of Luck", "of Doom", "of the Bear", "of the Phoenix" };
 
     public static Item GenerateItem(int level)
     {
@@ -68,90 +64,55 @@ public static class ItemGenerator
         Item item = new Item(baseItem.Name, baseItem.Width, baseItem.Height, baseItem.BaseColor, baseItem.BaseDice, baseItem.Type);
         item.Rarity = rarity;
         
-        if (baseItem.Type == ItemType.Gem)
+        if (rarity != ItemRarity.Common)
         {
-            item.SynergyBonusStr = baseItem.SynStr;
-            item.SynergyBonusDex = baseItem.SynDex;
-            item.SynergyBonusInt = baseItem.SynInt;
-            item.SynergyTarget = baseItem.SynTarget;
-            item.Description = "Place adjacent to items to boost them.";
-        }
-
-        if (rarity == ItemRarity.Common)
-        {
-            string prefix = _shoddyPrefixes[_random.Next(_shoddyPrefixes.Length)];
+            string prefix = _prefixes[_random.Next(_prefixes.Length)];
             item.Name = $"{prefix} {baseItem.Name}";
+            ApplyEffectFromWord(item, prefix, level);
         }
-        else if (rarity == ItemRarity.Unique)
+
+        if (rarity == ItemRarity.Rare || rarity == ItemRarity.Unique)
         {
-            item.Name = _uniqueNames[_random.Next(_uniqueNames.Length)];
-            item.Color = Color.OrangeRed;
-            item.BaseStr += _random.Next(3, 6) + level;
-            item.BaseDex += _random.Next(3, 6) + level;
-            item.BaseInt += _random.Next(3, 6) + level;
-            item.BaseLuck += _random.Next(3, 6) + level;
-            
-            // Upgrade Dice for Uniques
-            if (item.DiceType == DiceType.D4_Basic) item.DiceType = DiceType.D8_Basic;
-            else if (item.DiceType == DiceType.D6_Fire) item.DiceType = DiceType.D10_Basic;
-            else if (item.DiceType == DiceType.D6_Ice) item.DiceType = DiceType.D10_Basic;
-            else if (item.DiceType == DiceType.D8_Basic) item.DiceType = DiceType.D12_Basic;
-            else if (item.DiceType == DiceType.D10_Basic) item.DiceType = DiceType.D20_Steel;
-            else if (item.DiceType == DiceType.D12_Basic) item.DiceType = DiceType.D20_Steel;
-            else if (item.DiceType == DiceType.None) item.DiceType = DiceType.D6_Fire;
+            string suffix = _suffixes[_random.Next(_suffixes.Length)];
+            item.Name += $" {suffix}";
+            item.BaseStr += _random.Next(1, 4) + (level / 5);
         }
-        else
+
+        if (item.Type == ItemType.Armor)
         {
-            int statPoints = (rarity == ItemRarity.Rare) ? 4 : 2;
-            statPoints += level;
-
-            bool hasPrefix = _random.Next(2) == 0 || rarity == ItemRarity.Rare;
-            bool hasSuffix = !hasPrefix || rarity == ItemRarity.Rare;
-
-            string prefix = "";
-            string suffix = "";
-
-            if (hasPrefix)
-            {
-                prefix = _prefixes[_random.Next(_prefixes.Length)];
-                ApplyStatFromWord(item, prefix, statPoints);
-            }
-
-            if (hasSuffix)
-            {
-                suffix = _suffixes[_random.Next(_suffixes.Length)];
-                ApplyStatFromWord(item, suffix, statPoints);
-            }
-
-            if (hasPrefix && hasSuffix) item.Name = $"{prefix} {baseItem.Name} {suffix}";
-            else if (hasPrefix) item.Name = $"{prefix} {baseItem.Name}";
-            else if (hasSuffix) item.Name = $"{baseItem.Name} {suffix}";
+            item.EffectType = StatusEffectType.Shield;
+            item.EffectValue = 5 + level;
+            item.Description = $"Provides {item.EffectValue} Shield each turn.";
         }
-        
+
         item.ResetStats();
-
         return item;
     }
 
-    private static void ApplyStatFromWord(Item item, string word, int points)
+    private static void ApplyEffectFromWord(Item item, string word, int level)
     {
-        if (word.Contains("Heavy") || word.Contains("Brutal") || word.Contains("Strength") || word.Contains("Bear"))
-            item.BaseStr += points;
-        else if (word.Contains("Swift") || word.Contains("Dexterity") || word.Contains("Eagle") || word.Contains("Speed"))
-            item.BaseDex += points;
-        else if (word.Contains("Arcane") || word.Contains("Wisdom") || word.Contains("Owl") || word.Contains("Frozen"))
-            item.BaseInt += points;
-        else if (word.Contains("Lucky") || word.Contains("Luck") || word.Contains("Divine"))
-            item.BaseLuck += points;
-        else if (word.Contains("Burning") || word.Contains("Hell"))
+        switch (word)
         {
-            item.BaseStr += points / 2;
-            item.BaseInt += points / 2;
-        }
-        else
-        {
-            item.BaseStr += 1;
-            item.BaseDex += 1;
+            case "Venomous":
+                item.EffectType = StatusEffectType.Poison;
+                item.EffectValue = 2 + (level / 3);
+                item.Description = $"Applies {item.EffectValue} Poison to enemies.";
+                break;
+            case "Burning":
+                item.EffectType = StatusEffectType.Vulnerable;
+                item.EffectValue = 1;
+                item.Description = "Makes enemies Vulnerable.";
+                break;
+            case "Frozen":
+                item.EffectType = StatusEffectType.Weak;
+                item.EffectValue = 1;
+                item.Description = "Makes enemies Weak.";
+                break;
+            case "Vampiric":
+                item.EffectType = StatusEffectType.Regen;
+                item.EffectValue = 1 + (level / 10);
+                item.Description = $"Grants {item.EffectValue} Regen to you.";
+                break;
         }
     }
 }

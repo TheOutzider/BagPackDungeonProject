@@ -4,12 +4,11 @@ Ce document suit l'évolution du développement, les choix techniques effectués
 
 ---
 
-## **ÉTAT DU PROJET : BÊTA 1.2 (BepuPhysics Integration)**
-**Date de dernière mise à jour :** 20/01/2026
-**Version :** 1.2
+## **ÉTAT DU PROJET : BÊTA 1.5 (Procedural & UI Overhaul)**
+**Date de dernière mise à jour :** 21/01/2026
+**Version :** 1.5
 
-Le jeu est une Vertical Slice complète et jouable à l'infini.
-Toutes les mécaniques principales (Combat, Inventaire, Map, Shop, Event, Progression) sont implémentées et fonctionnelles.
+Le jeu a franchi une étape majeure dans sa profondeur de gameplay et son identité visuelle. Le système de combat est désormais tactique grâce aux effets de statut et aux capacités ennemies.
 
 ---
 
@@ -18,69 +17,57 @@ Toutes les mécaniques principales (Combat, Inventaire, Map, Shop, Event, Progre
 ### **A. Architecture & Moteur**
 *   **Résolution Virtuelle :** 1920x1080 avec Letterboxing adaptatif.
 *   **Game States :** Machine à états complète (`TitleScreen`, `SlotSelection`, `ClassSelection`, `Playing`, `Loot`, `GameOver`, `Options`, `RoomSelection`, `Shop`, `Event`).
-*   **Options :** Gestion persistante du Volume et du Plein Écran (`SettingsManager`).
+*   **Nettoyage Automatique :** Les dés sont désormais systématiquement effacés après chaque action de combat pour maintenir une arène propre.
 
-### **B. Système d'Inventaire (The Grid)**
-*   **Grille Tetris :** 6x8 cases. Drag & Drop, Rotation (Clic Droit).
+### **B. Système d'Inventaire & Items (The Grid)**
+*   **Générateur Procédural d'Items :** Plus de 20 bases d'objets avec préfixes/suffixes dynamiques influençant les stats et les effets.
+*   **Effets d'Items :** Les objets peuvent désormais appliquer des effets (Poison, Shield, Regen, Vulnerable, Weak) lors du lancer de dés.
 *   **Synergies :** Les Gemmes boostent les stats des objets adjacents.
-*   **Consommables :** Potions utilisables en combat.
-*   **Reliques :** Objets passifs puissants (Bonus Stats, Mana, Soin) obtenus via Events ou Loot rare.
+*   **Tooltips Premium :** Infobulles décalées du curseur, avec header coloré selon la rareté et bordures dynamiques.
 
-### **C. Système de Dés 3D (Physics & Rendering)**
-*   **Rendu 3D :** Génération procédurale de meshes (Cube D6, Icosaèdre D20, Tétraèdre D4, Octaèdre D8, D10, D12) avec texture dynamique.
-*   **Physique BepuPhysics v2 (v1.2) :** 
-    *   Intégration complète du moteur physique BepuPhysics.
-    *   Simulation réaliste des collisions (Rigid Body Dynamics).
-    *   Gestion précise de la gravité, friction et restitution.
-    *   Formes physiques adaptées (Box pour D6, Sphères pour les autres pour l'instant).
-*   **Animation :** Synchronisation temps réel entre la simulation physique et le rendu visuel.
-*   **Ombres :** Ombres portées dynamiques basées sur la hauteur réelle (Z) du dé.
+### **C. Bestiaire & Combat (Procedural Enemies)**
+*   **Générateur d'Ennemis :** Système de catégories (Beast, Undead, Construct, Demon, Ooze) avec modificateurs (Giant, Swift, Enraged, etc.).
+*   **Éléments :** Monstres élémentaires (Fiery, Frozen, Venomous, etc.) avec teintes visuelles et effets de statut passifs.
+*   **Capacités Ennemies (AI) :** Les monstres ne se contentent plus d'attaquer. Ils peuvent se soigner, se buffer (Shield), voler du Mana/Or ou infliger des debuffs.
+*   **Status Effects :** Implémentation complète du Poison, Bleed, Weak, Vulnerable, Shield et Regen.
 
-### **D. Combat & Skills**
-*   **Tour par Tour :** Joueur (Dés + Bonus Str) vs Ennemi.
-*   **Compétences (Mana) :** 
-    *   **Warrior :** Bash, Heal.
-    *   **Mage :** Fireball, Heal, Reroll.
-    *   **Rogue :** Stab, Reroll.
-*   **Feedback :** Screen Shake (Impacts murs/ennemis), Flash Rouge, Textes Flottants, Particules.
+### **D. Interface Utilisateur (UI/UX Overhaul)**
+*   **Orbes de Vie/Mana :** Sphères de liquide animées avec **vague sinusoïdale** fluide, situées dans les coins inférieurs pour libérer la zone de jeu.
+*   **Portrait Joueur :** Portrait central abaissé sur le calque le plus haut, chevauchant le journal de combat pour un style "RPG classique".
+*   **Cartes de Sélection (3D-ish) :** Les salles et le butin sont présentés sous forme de cartes élégantes qui grossissent (Hover) et s'illuminent au survol.
+*   **Bouton d'Action :** Ajout d'un bouton "LANCER LES DES" pulsant dans l'arène pour guider le joueur.
+*   **Événements Intégrés :** Les événements et le magasin s'affichent désormais directement dans l'arène centrale avec des visuels dédiés.
 
 ### **E. Progression & Map**
-*   **Room Selection :** Choix entre 3 salles après chaque victoire (Combat, Elite, Shop, Event, Rest).
-*   **Économie :** Gain d'Or, Achat d'objets/soin au Shop.
-*   **Événements :** Choix narratifs à risque (Prier, Voler, Ignorer).
-*   **Boucle Infinie :** Dungeon Level infini avec scaling de difficulté (HP/Dégâts ennemis).
-
-### **F. Persistance (Save System)**
-*   **Multi-Slots :** 3 emplacements.
-*   **Données Complètes :** Sauvegarde de l'inventaire, des stats, de la position, de la seed, de l'or et des reliques.
+*   **Système de Biomes :** Descriptions et ambiances changeant selon l'étage (Caves, Ruins, Depths).
+*   **Progression d'Étage :** Passage au niveau supérieur après la défaite d'un Boss à la salle 10.
+*   **Salles Spéciales :** Ajout de salles "Treasure" cachées.
 
 ---
 
 ## **2. MODIFICATIONS RÉCENTES**
 
-*   **BepuPhysics :** Remplacement de la physique "maison" par BepuPhysics v2 pour une simulation stable et réaliste.
-*   **Physique 2.0 :** Refonte complète du moteur physique des dés. Ajout de collisions entre dés, gestion de masse, friction réaliste et lancers en cône.
-*   **Dés Spéciaux :** Ajout des types D4, D8, D10, D12 avec couleurs et plages de valeurs spécifiques.
-*   **Dés 3D :** Remplacement des sprites 2D par un moteur 3D custom intégré.
-*   **Map Simplifiée :** Remplacement du graphe complexe par un choix de 3 portes ("Slay the Spire" -> "Hand of Fate").
+*   **UI Polish :** Déplacement des Skills dans le panneau de gauche sous les stats.
+*   **Vague Sinusoïdale :** Rendu du liquide des orbes par bandes verticales pour un effet ondulant réaliste.
+*   **Correction Tooltips :** Décalage des infobulles pour éviter qu'elles ne passent sous le curseur graphique.
+*   **Stabilité Texte :** Suppression des accents et symboles spéciaux pour compatibilité SpriteFont.
 
 ---
 
 ## **3. TODO LIST (Reste à faire pour la Release)**
 
 ### **Priorité Haute (Polish)**
-*   [ ] **Assets Graphiques :** Remplacer les placeholders (Carrés de couleur) par du Pixel Art.
+*   [ ] **Assets Graphiques :** Remplacer les placeholders par du Pixel Art (Monstres, Items, Décors).
 *   [ ] **Audio :** Ajouter SFX (Impact, Dice Roll, UI) et Musique d'ambiance.
 
 ### **Priorité Moyenne (Contenu)**
-*   [ ] **Plus d'Items :** Ajouter des armes légendaires et des sets d'armure.
-*   [ ] **Bestiaire :** Diversifier les comportements ennemis (Debuffs, Soin, Invocations).
-*   [x] **Dés Spéciaux :** Ajouter D4, D8, D10, D12.
+*   [ ] **Reliques Passives :** Ajouter plus de reliques avec des effets uniques (ex: "Chaque 6 lancé donne 1 Shield").
+*   [ ] **Arbre de Compétences :** Permettre au joueur de choisir de nouvelles compétences lors de la montée d'étage.
 
 ---
 
 ## **4. NOTES TECHNIQUES**
 
-*   **3D Rendering :** Utilisation de `BasicEffect` avec `VertexPositionNormalTexture`.
-*   **Texture Generation :** Utilisation de `RenderTarget2D` pour créer les textures de dés à la volée.
-*   **Physics :** BepuPhysics v2. Simulation Rigid Body complète. Conversion Vector3 (System.Numerics) <-> Vector3 (XNA).
+*   **Rendu Orbes :** Utilisation de `Math.Sin` avec découpage de texture en bandes verticales (step de 2px).
+*   **Z-Order :** Le HUD est dessiné en dernier dans le SpriteBatch pour garantir la priorité visuelle.
+*   **Procedural Logic :** Utilisation de dictionnaires de bases et de listes de modificateurs avec pondération aléatoire.

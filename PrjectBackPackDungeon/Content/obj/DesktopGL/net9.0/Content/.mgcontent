@@ -4,32 +4,90 @@
   <Platform>DesktopGL</Platform>
   <Config />
   <SourceFiles>
-    <File>C:/Users/tastet/RiderProjects/MonoGameProject2/PrjectBackPackDungeon/Content/MainFont.spritefont</File>
-    <File>C:/Users/tastet/RiderProjects/MonoGameProject2/PrjectBackPackDungeon/Content/TitleFont.spritefont</File>
-    <File>C:/Users/tastet/RiderProjects/MonoGameProject2/PrjectBackPackDungeon/Content/Fonts/CloisterBlack.spritefont</File>
-    <File>C:/Users/tastet/RiderProjects/MonoGameProject2/PrjectBackPackDungeon/Content/PNG/title_logo.png</File>
-    <File>C:/Users/tastet/RiderProjects/MonoGameProject2/PrjectBackPackDungeon/Content/PNG/nouvellepartie_idle.png</File>
-    <File>C:/Users/tastet/RiderProjects/MonoGameProject2/PrjectBackPackDungeon/Content/PNG/nouvellepartie_hover.png</File>
-    <File>C:/Users/tastet/RiderProjects/MonoGameProject2/PrjectBackPackDungeon/Content/PNG/option_idle.png</File>
-    <File>C:/Users/tastet/RiderProjects/MonoGameProject2/PrjectBackPackDungeon/Content/PNG/option_hover.png</File>
-    <File>C:/Users/tastet/RiderProjects/MonoGameProject2/PrjectBackPackDungeon/Content/PNG/quitter_idle.png</File>
-    <File>C:/Users/tastet/RiderProjects/MonoGameProject2/PrjectBackPackDungeon/Content/PNG/quitter_hover.png</File>
-    <File>C:/Users/tastet/RiderProjects/MonoGameProject2/PrjectBackPackDungeon/Content/PNG/cursor_normal.png</File>
-    <File>C:/Users/tastet/RiderProjects/MonoGameProject2/PrjectBackPackDungeon/Content/PNG/cursor_clicked.png</File>
-    <File>C:/Users/tastet/RiderProjects/MonoGameProject2/PrjectBackPackDungeon/Content/PNG/finger_pointing_left.png</File>
-    <File>C:/Users/tastet/RiderProjects/MonoGameProject2/PrjectBackPackDungeon/Content/PNG/finger_pointing_right.png</File>
-    <File>C:/Users/tastet/RiderProjects/MonoGameProject2/PrjectBackPackDungeon/Content/PNG/arm_strong_left.png</File>
-    <File>C:/Users/tastet/RiderProjects/MonoGameProject2/PrjectBackPackDungeon/Content/PNG/arm_strong_right.png</File>
-    <File>C:/Users/tastet/RiderProjects/MonoGameProject2/PrjectBackPackDungeon/Content/PNG/finger_thumbs_up.png</File>
-    <File>C:/Users/tastet/RiderProjects/MonoGameProject2/PrjectBackPackDungeon/Content/PNG/finger_thumbs_down.png</File>
-    <File>C:/Users/tastet/RiderProjects/MonoGameProject2/PrjectBackPackDungeon/Content/PNG/dice_d4.png</File>
-    <File>C:/Users/tastet/RiderProjects/MonoGameProject2/PrjectBackPackDungeon/Content/PNG/dice_d6.png</File>
-    <File>C:/Users/tastet/RiderProjects/MonoGameProject2/PrjectBackPackDungeon/Content/PNG/dice_d8.png</File>
-    <File>C:/Users/tastet/RiderProjects/MonoGameProject2/PrjectBackPackDungeon/Content/PNG/dice_d10.png</File>
-    <File>C:/Users/tastet/RiderProjects/MonoGameProject2/PrjectBackPackDungeon/Content/PNG/dice_d12.png</File>
-    <File>C:/Users/tastet/RiderProjects/MonoGameProject2/PrjectBackPackDungeon/Content/PNG/dice_d20.png</File>
+    <File>C:/Users/outzi/RiderProjects/BagPackDungeonProject/PrjectBackPackDungeon/Content/MainFont.spritefont</File>
+    <File>C:/Users/outzi/RiderProjects/BagPackDungeonProject/PrjectBackPackDungeon/Content/TitleFont.spritefont</File>
+    <File>C:/Users/outzi/RiderProjects/BagPackDungeonProject/PrjectBackPackDungeon/Content/Fonts/Alagard.spritefont</File>
+    <File>C:/Users/outzi/RiderProjects/BagPackDungeonProject/PrjectBackPackDungeon/Content/Fonts/CloisterBlack.spritefont</File>
+    <File>C:/Users/outzi/RiderProjects/BagPackDungeonProject/PrjectBackPackDungeon/Content/PNG/title_logo.png</File>
+    <File>C:/Users/outzi/RiderProjects/BagPackDungeonProject/PrjectBackPackDungeon/Content/PNG/nouvellepartie_idle.png</File>
+    <File>C:/Users/outzi/RiderProjects/BagPackDungeonProject/PrjectBackPackDungeon/Content/PNG/nouvellepartie_hover.png</File>
+    <File>C:/Users/outzi/RiderProjects/BagPackDungeonProject/PrjectBackPackDungeon/Content/PNG/option_idle.png</File>
+    <File>C:/Users/outzi/RiderProjects/BagPackDungeonProject/PrjectBackPackDungeon/Content/PNG/option_hover.png</File>
+    <File>C:/Users/outzi/RiderProjects/BagPackDungeonProject/PrjectBackPackDungeon/Content/PNG/quitter_idle.png</File>
+    <File>C:/Users/outzi/RiderProjects/BagPackDungeonProject/PrjectBackPackDungeon/Content/PNG/quitter_hover.png</File>
+    <File>C:/Users/outzi/RiderProjects/BagPackDungeonProject/PrjectBackPackDungeon/Content/PNG/cursor_normal.png</File>
+    <File>C:/Users/outzi/RiderProjects/BagPackDungeonProject/PrjectBackPackDungeon/Content/PNG/cursor_clicked.png</File>
+    <File>C:/Users/outzi/RiderProjects/BagPackDungeonProject/PrjectBackPackDungeon/Content/PNG/finger_pointing_left.png</File>
+    <File>C:/Users/outzi/RiderProjects/BagPackDungeonProject/PrjectBackPackDungeon/Content/PNG/finger_pointing_right.png</File>
+    <File>C:/Users/outzi/RiderProjects/BagPackDungeonProject/PrjectBackPackDungeon/Content/PNG/arm_strong_left.png</File>
+    <File>C:/Users/outzi/RiderProjects/BagPackDungeonProject/PrjectBackPackDungeon/Content/PNG/arm_strong_right.png</File>
+    <File>C:/Users/outzi/RiderProjects/BagPackDungeonProject/PrjectBackPackDungeon/Content/PNG/finger_thumbs_up.png</File>
+    <File>C:/Users/outzi/RiderProjects/BagPackDungeonProject/PrjectBackPackDungeon/Content/PNG/finger_thumbs_down.png</File>
+    <File>C:/Users/outzi/RiderProjects/BagPackDungeonProject/PrjectBackPackDungeon/Content/PNG/dice_d4.png</File>
+    <File>C:/Users/outzi/RiderProjects/BagPackDungeonProject/PrjectBackPackDungeon/Content/PNG/dice_d6.png</File>
+    <File>C:/Users/outzi/RiderProjects/BagPackDungeonProject/PrjectBackPackDungeon/Content/PNG/dice_d8.png</File>
+    <File>C:/Users/outzi/RiderProjects/BagPackDungeonProject/PrjectBackPackDungeon/Content/PNG/dice_d10.png</File>
+    <File>C:/Users/outzi/RiderProjects/BagPackDungeonProject/PrjectBackPackDungeon/Content/PNG/dice_d12.png</File>
+    <File>C:/Users/outzi/RiderProjects/BagPackDungeonProject/PrjectBackPackDungeon/Content/PNG/dice_d20.png</File>
+    <File>C:/Users/outzi/RiderProjects/BagPackDungeonProject/PrjectBackPackDungeon/Content/PNG/room_battle.png</File>
+    <File>C:/Users/outzi/RiderProjects/BagPackDungeonProject/PrjectBackPackDungeon/Content/PNG/room_elite.png</File>
+    <File>C:/Users/outzi/RiderProjects/BagPackDungeonProject/PrjectBackPackDungeon/Content/PNG/room_boss.png</File>
+    <File>C:/Users/outzi/RiderProjects/BagPackDungeonProject/PrjectBackPackDungeon/Content/PNG/room_shop.png</File>
+    <File>C:/Users/outzi/RiderProjects/BagPackDungeonProject/PrjectBackPackDungeon/Content/PNG/room_rest.png</File>
+    <File>C:/Users/outzi/RiderProjects/BagPackDungeonProject/PrjectBackPackDungeon/Content/PNG/item_common.png</File>
+    <File>C:/Users/outzi/RiderProjects/BagPackDungeonProject/PrjectBackPackDungeon/Content/PNG/item_magic.png</File>
+    <File>C:/Users/outzi/RiderProjects/BagPackDungeonProject/PrjectBackPackDungeon/Content/PNG/item_rare.png</File>
+    <File>C:/Users/outzi/RiderProjects/BagPackDungeonProject/PrjectBackPackDungeon/Content/PNG/item_unique.png</File>
+    <File>C:/Users/outzi/RiderProjects/BagPackDungeonProject/PrjectBackPackDungeon/Content/PNG/bag_inventory.png</File>
+    <File>C:/Users/outzi/RiderProjects/BagPackDungeonProject/PrjectBackPackDungeon/Content/PNG/portrait_warrior_idle.png</File>
+    <File>C:/Users/outzi/RiderProjects/BagPackDungeonProject/PrjectBackPackDungeon/Content/PNG/portrait_warrior_attack.png</File>
+    <File>C:/Users/outzi/RiderProjects/BagPackDungeonProject/PrjectBackPackDungeon/Content/PNG/portrait_warrior_hit.png</File>
+    <File>C:/Users/outzi/RiderProjects/BagPackDungeonProject/PrjectBackPackDungeon/Content/PNG/portrait_warrior_heal.png</File>
+    <File>C:/Users/outzi/RiderProjects/BagPackDungeonProject/PrjectBackPackDungeon/Content/PNG/portrait_warrior_minus_50.png</File>
+    <File>C:/Users/outzi/RiderProjects/BagPackDungeonProject/PrjectBackPackDungeon/Content/PNG/portrait_warrior_minus_25.png</File>
+    <File>C:/Users/outzi/RiderProjects/BagPackDungeonProject/PrjectBackPackDungeon/Content/PNG/portrait_mage_idle.png</File>
+    <File>C:/Users/outzi/RiderProjects/BagPackDungeonProject/PrjectBackPackDungeon/Content/PNG/portrait_mage_attack.png</File>
+    <File>C:/Users/outzi/RiderProjects/BagPackDungeonProject/PrjectBackPackDungeon/Content/PNG/portrait_mage_hit.png</File>
+    <File>C:/Users/outzi/RiderProjects/BagPackDungeonProject/PrjectBackPackDungeon/Content/PNG/portrait_mage_heal.png</File>
+    <File>C:/Users/outzi/RiderProjects/BagPackDungeonProject/PrjectBackPackDungeon/Content/PNG/portrait_mage_minus_50.png</File>
+    <File>C:/Users/outzi/RiderProjects/BagPackDungeonProject/PrjectBackPackDungeon/Content/PNG/portrait_mage_minus_25.png</File>
+    <File>C:/Users/outzi/RiderProjects/BagPackDungeonProject/PrjectBackPackDungeon/Content/PNG/portrait_rogue_idle.png</File>
+    <File>C:/Users/outzi/RiderProjects/BagPackDungeonProject/PrjectBackPackDungeon/Content/PNG/portrait_rogue_attack.png</File>
+    <File>C:/Users/outzi/RiderProjects/BagPackDungeonProject/PrjectBackPackDungeon/Content/PNG/portrait_rogue_hit.png</File>
+    <File>C:/Users/outzi/RiderProjects/BagPackDungeonProject/PrjectBackPackDungeon/Content/PNG/portrait_rogue_heal.png</File>
+    <File>C:/Users/outzi/RiderProjects/BagPackDungeonProject/PrjectBackPackDungeon/Content/PNG/portrait_rogue_minus_50.png</File>
+    <File>C:/Users/outzi/RiderProjects/BagPackDungeonProject/PrjectBackPackDungeon/Content/PNG/portrait_rogue_minus_25.png</File>
   </SourceFiles>
   <DestFiles>
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />

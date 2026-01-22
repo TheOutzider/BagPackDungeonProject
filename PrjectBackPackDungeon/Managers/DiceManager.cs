@@ -14,7 +14,6 @@ public class DiceManager
     private SpriteFont _font;
     private Texture2D _pixel;
     
-    // Textures des dés
     private Dictionary<DiceType, Texture2D> _diceTextures;
     
     public bool IsRolling { get; private set; }
@@ -34,7 +33,6 @@ public class DiceManager
         _pixel = new Texture2D(graphicsDevice, 1, 1);
         _pixel.SetData(new[] { Color.White });
 
-        // Chargement des textures de dés
         _diceTextures = new Dictionary<DiceType, Texture2D>();
         try {
             _diceTextures[DiceType.D4_Basic] = content.Load<Texture2D>("PNG/dice_d4");
@@ -50,6 +48,14 @@ public class DiceManager
     }
 
     public void SetEffectManager(EffectManager em) => _effectManager = em;
+
+    public void ClearDices()
+    {
+        _dices.Clear();
+        IsRolling = false;
+        _turnEndedTriggered = false;
+        _impactTriggered = false;
+    }
 
     public void ThrowDices(List<Item> items, PlayerClass pClass)
     {
@@ -72,7 +78,7 @@ public class DiceManager
             int row = i / cols;
             int col = i % cols;
             
-            float spacing = 160f; // Plus d'espace pour les sprites
+            float spacing = 160f; 
             float startX = _arenaBounds.Center.X - ((cols - 1) * spacing) / 2f;
             float startY = _arenaBounds.Center.Y - ((count / cols) * spacing) / 2f;
             
@@ -166,26 +172,21 @@ public class DiceManager
         Texture2D tex = _diceTextures[dice.Type];
         
         Vector2 origin = new Vector2(tex.Width / 2f, tex.Height / 2f);
-        float baseScale = 100f / Math.Max(tex.Width, tex.Height); // On normalise la taille à ~100px
+        float baseScale = 100f / Math.Max(tex.Width, tex.Height); 
         float finalScale = baseScale * dice.Scale;
 
-        // 1. Ombre portée
         spriteBatch.Draw(tex, dice.Position + new Vector2(8, 8), null, Color.Black * 0.3f, dice.Rotation, origin, finalScale, SpriteEffects.None, 0f);
 
-        // 2. Le dé (teinté avec sa couleur)
         Color drawColor = dice.Color;
         if (dice.IsCritical) drawColor = Color.Lerp(dice.Color, Color.White, 0.4f);
         
         spriteBatch.Draw(tex, dice.Position, null, drawColor, dice.Rotation, origin, finalScale, SpriteEffects.None, 0f);
 
-        // 3. Chiffre
         string text = dice.Value.ToString();
         Vector2 textSize = _font.MeasureString(text);
         float textScale = (dice.IsCritical ? 1.8f : 1.4f) * dice.Scale;
         
-        // Ombre texte
         spriteBatch.DrawString(_font, text, dice.Position + new Vector2(2, 2), Color.Black * 0.8f, 0f, textSize / 2, textScale, SpriteEffects.None, 0f);
-        // Texte principal
         Color textColor = dice.IsCritical ? Color.Gold : (dice.IsFumble ? Color.Red : Color.White);
         spriteBatch.DrawString(_font, text, dice.Position, textColor, 0f, textSize / 2, textScale, SpriteEffects.None, 0f);
     }

@@ -43,8 +43,8 @@ public class CoreGame : Game
     private SpriteFont _font;
     private SpriteFont _titleFont;
     private SpriteFont _cloisterFont; 
+    private SpriteFont _alagardFont; 
     
-    // Textures UI
     private Texture2D _texLogo;
     private Texture2D _texBtnNewGameIdle;
     private Texture2D _texBtnNewGameHover;
@@ -53,13 +53,26 @@ public class CoreGame : Game
     private Texture2D _texBtnQuitIdle;
     private Texture2D _texBtnQuitHover;
     
-    // Textures Effets & Curseur
     private Texture2D _texCursorNormal;
     private Texture2D _texCursorClicked;
     private Texture2D _texFingerLeft;  
     private Texture2D _texFingerRight; 
     private Texture2D _texArmLeft;
     private Texture2D _texArmRight;
+
+    private Texture2D _texRoomBattle;
+    private Texture2D _texRoomElite;
+    private Texture2D _texRoomBoss;
+    private Texture2D _texRoomShop;
+    private Texture2D _texRoomRest;
+    private Texture2D _texRoomEvent;
+    
+    private Texture2D _texItemCommon;
+    private Texture2D _texItemMagic;
+    private Texture2D _texItemRare;
+    private Texture2D _texItemUnique;
+    
+    private Texture2D _texBagInventory;
 
     private GameState _currentState = GameState.TitleScreen;
     private PlayerClass _selectedClass = PlayerClass.Warrior;
@@ -71,13 +84,15 @@ public class CoreGame : Game
     private List<Button> _classButtons;
     private List<Button> _optionButtons;
     private Button _backButton;
+    private Button _rollDiceButton;
     
-    private List<Button> _roomButtons;
+    private List<RoomCard> _roomCards;
+    private List<LootCard> _lootCards;
     private List<Room> _nextRoomOptions;
     
     private List<Button> _shopButtons;
     private List<Button> _eventButtons;
-    private string _eventText;
+    private GameEvent _currentEvent;
     
     private struct Particle { public Vector2 Pos; public float Speed; public float Size; public Color Color; }
     private List<Particle> _bgParticles;
@@ -95,9 +110,9 @@ public class CoreGame : Game
     private List<Skill> _playerSkills;
     private List<Button> _skillButtons;
     private List<Relic> _playerRelics;
+    private List<StatusEffect> _playerEffects = new List<StatusEffect>();
     
     private List<Item> _lootOptions;
-    private Rectangle[] _lootRects;
     
     private int _baseStr = 5;
     private int _baseDex = 5;
@@ -114,13 +129,18 @@ public class CoreGame : Game
     private int _playerMana = 50;
     private int _playerMaxMana = 50;
     private int _playerGold = 0;
+
+    public int PlayerGold { get => _playerGold; set => _playerGold = value; }
+    public int PlayerMaxHp { get => _playerMaxHp; set => _playerMaxHp = value; }
     
     private bool _waitingForNextRoom = false;
+    private bool _waitingForNextFloor = false;
     
     private MouseState _prevMouseState;
     private KeyboardState _prevKeyboardState;
     
     private Rectangle diceBounds;
+    private float _rollButtonTimer = 0f;
 
     public CoreGame()
     {
@@ -192,6 +212,7 @@ public class CoreGame : Game
             _font = Content.Load<SpriteFont>("MainFont");
             _titleFont = Content.Load<SpriteFont>("TitleFont");
             _cloisterFont = Content.Load<SpriteFont>("Fonts/CloisterBlack");
+            _alagardFont = Content.Load<SpriteFont>("Fonts/Alagard"); 
             
             _texLogo = Content.Load<Texture2D>("PNG/title_logo");
             _texBtnNewGameIdle = Content.Load<Texture2D>("PNG/nouvellepartie_idle");
@@ -207,6 +228,20 @@ public class CoreGame : Game
             _texFingerRight = Content.Load<Texture2D>("PNG/finger_pointing_right");
             _texArmLeft = Content.Load<Texture2D>("PNG/arm_strong_left");
             _texArmRight = Content.Load<Texture2D>("PNG/arm_strong_right");
+
+            _texRoomBattle = Content.Load<Texture2D>("PNG/room_battle");
+            _texRoomElite = Content.Load<Texture2D>("PNG/room_elite");
+            _texRoomBoss = Content.Load<Texture2D>("PNG/room_boss");
+            _texRoomShop = Content.Load<Texture2D>("PNG/room_shop");
+            _texRoomRest = Content.Load<Texture2D>("PNG/room_rest");
+            _texRoomEvent = _texRoomBattle; 
+
+            _texItemCommon = Content.Load<Texture2D>("PNG/item_common");
+            _texItemMagic = Content.Load<Texture2D>("PNG/item_magic");
+            _texItemRare = Content.Load<Texture2D>("PNG/item_rare");
+            _texItemUnique = Content.Load<Texture2D>("PNG/item_unique");
+            
+            _texBagInventory = Content.Load<Texture2D>("PNG/bag_inventory");
         }
         catch
         {
@@ -245,19 +280,19 @@ public class CoreGame : Game
         _titleButtons.Add(btnQuit);
 
         _classButtons = new List<Button>();
-        var btnWar = new Button(new Rectangle(VirtualWidth/2 - 400, 400, 250, 300), "WARRIOR\n\nHigh HP\nMelee", _font, GraphicsDevice);
+        var btnWar = new Button(new Rectangle(VirtualWidth/2 - 400, 400, 250, 300), "WARRIOR\n\nHigh HP\nMelee", _alagardFont, GraphicsDevice);
         btnWar.OnClick += () => StartGame(PlayerClass.Warrior);
         _classButtons.Add(btnWar);
         
-        var btnMage = new Button(new Rectangle(VirtualWidth/2 - 125, 400, 250, 300), "MAGE\n\nHigh Mana\nMagic", _font, GraphicsDevice);
+        var btnMage = new Button(new Rectangle(VirtualWidth/2 - 125, 400, 250, 300), "MAGE\n\nHigh Mana\nMagic", _alagardFont, GraphicsDevice);
         btnMage.OnClick += () => StartGame(PlayerClass.Mage);
         _classButtons.Add(btnMage);
         
-        var btnRogue = new Button(new Rectangle(VirtualWidth/2 + 150, 400, 250, 300), "ROGUE\n\nBalanced\nCrit", _font, GraphicsDevice);
+        var btnRogue = new Button(new Rectangle(VirtualWidth/2 + 150, 400, 250, 300), "ROGUE\n\nBalanced\nCrit", _alagardFont, GraphicsDevice);
         btnRogue.OnClick += () => StartGame(PlayerClass.Rogue);
         _classButtons.Add(btnRogue);
         
-        _backButton = new Button(new Rectangle(50, 50, 100, 50), "BACK", _font, GraphicsDevice);
+        _backButton = new Button(new Rectangle(50, 50, 100, 50), "BACK", _alagardFont, GraphicsDevice);
         _backButton.OnClick += () => _currentState = GameState.TitleScreen;
     }
     
@@ -268,7 +303,7 @@ public class CoreGame : Game
         int startY = 300;
         
         string fsText = SettingsManager.Settings.IsFullScreen ? "FULLSCREEN: ON" : "FULLSCREEN: OFF";
-        var btnFs = new Button(new Rectangle(centerX - 150, startY, 300, 60), fsText, _font, GraphicsDevice);
+        var btnFs = new Button(new Rectangle(centerX - 150, startY, 300, 60), fsText, _alagardFont, GraphicsDevice);
         btnFs.OnClick += () => {
             SettingsManager.Settings.IsFullScreen = !SettingsManager.Settings.IsFullScreen;
             ApplySettings();
@@ -278,7 +313,7 @@ public class CoreGame : Game
         _optionButtons.Add(btnFs);
         
         string musicText = $"MUSIC: {(int)(SettingsManager.Settings.MusicVolume * 100)}%";
-        var btnMusic = new Button(new Rectangle(centerX - 150, startY + 80, 300, 60), musicText, _font, GraphicsDevice);
+        var btnMusic = new Button(new Rectangle(centerX - 150, startY + 80, 300, 60), musicText, _alagardFont, GraphicsDevice);
         btnMusic.OnClick += () => {
             SettingsManager.Settings.MusicVolume += 0.1f;
             if (SettingsManager.Settings.MusicVolume > 1.0f) SettingsManager.Settings.MusicVolume = 0.0f;
@@ -288,7 +323,7 @@ public class CoreGame : Game
         _optionButtons.Add(btnMusic);
         
         string sfxText = $"SFX: {(int)(SettingsManager.Settings.SfxVolume * 100)}%";
-        var btnSfx = new Button(new Rectangle(centerX - 150, startY + 160, 300, 60), sfxText, _font, GraphicsDevice);
+        var btnSfx = new Button(new Rectangle(centerX - 150, startY + 160, 300, 60), sfxText, _alagardFont, GraphicsDevice);
         btnSfx.OnClick += () => {
             SettingsManager.Settings.SfxVolume += 0.1f;
             if (SettingsManager.Settings.SfxVolume > 1.0f) SettingsManager.Settings.SfxVolume = 0.0f;
@@ -318,7 +353,7 @@ public class CoreGame : Game
             {
                 text = $"SLOT {i + 1}\n{data.Class} - Floor {data.DungeonLevel}-{data.FloorNumber}\n{data.SaveDate.ToShortDateString()} {data.SaveDate.ToShortTimeString()}";
                 
-                var btnDel = new Button(new Rectangle(centerX + slotWidth/2 + 20, startY + (i * 200), 50, 50), "X", _font, GraphicsDevice);
+                var btnDel = new Button(new Rectangle(centerX + slotWidth/2 + 20, startY + (i * 200), 50, 50), "X", _alagardFont, GraphicsDevice);
                 btnDel.OnClick += () => {
                     SaveManager.DeleteSave(slotIndex);
                     RefreshSlotButtons();
@@ -326,7 +361,7 @@ public class CoreGame : Game
                 _deleteButtons.Add(btnDel);
             }
 
-            var btnSlot = new Button(new Rectangle(centerX - slotWidth/2, startY + (i * 200), slotWidth, slotHeight), text, _font, GraphicsDevice);
+            var btnSlot = new Button(new Rectangle(centerX - slotWidth/2, startY + (i * 200), slotWidth, slotHeight), text, _alagardFont, GraphicsDevice);
             btnSlot.OnClick += () => {
                 _currentSlotIndex = slotIndex;
                 if (data == null)
@@ -349,7 +384,7 @@ public class CoreGame : Game
         int gameHeight = (int)(VirtualHeight * 0.8f);
         int logHeight = VirtualHeight - gameHeight;
 
-        _infoPanel = new InfoPanel(new Rectangle(0, 0, sideWidth, VirtualHeight), GraphicsDevice, _font);
+        _infoPanel = new InfoPanel(new Rectangle(0, 0, sideWidth, VirtualHeight), GraphicsDevice, _alagardFont);
         
         Rectangle arenaBounds = new Rectangle(sideWidth, 0, centerWidth, gameHeight);
         diceBounds = arenaBounds;
@@ -360,13 +395,22 @@ public class CoreGame : Game
         _diceManager.SetEffectManager(_effectManager);
         _diceManager.OnTurnFinished += OnTurnFinished;
 
-        _hudOverlay = new HudOverlay(arenaBounds, GraphicsDevice, _font);
-        _gameLog = new GameLog(new Rectangle(sideWidth, gameHeight, centerWidth, logHeight), GraphicsDevice, _font);
+        _hudOverlay = new HudOverlay(arenaBounds, GraphicsDevice, _alagardFont, Content);
+        _gameLog = new GameLog(new Rectangle(sideWidth, gameHeight, centerWidth, logHeight), GraphicsDevice, _alagardFont);
 
-        int startX = sideWidth + centerWidth + 50; 
-        int startY = 100; 
-        _inventoryGrid = new InventoryGrid(new Vector2(startX, startY), GraphicsDevice, _font);
+        int startX = sideWidth + centerWidth; 
+        _inventoryGrid = new InventoryGrid(new Vector2(startX, 0), GraphicsDevice, _alagardFont, _texBagInventory);
         _inventoryGrid.OnItemUsed += OnItemUsed; 
+
+        _rollDiceButton = new Button(new Rectangle(sideWidth + centerWidth / 2 - 150, gameHeight - 150, 300, 80), "LANCER LES DES", _alagardFont, GraphicsDevice);
+        _rollDiceButton.OnClick += () => {
+            if (!_diceManager.IsRolling && !_waitingForNextRoom && !_waitingForNextFloor && _currentEnemy != null)
+            {
+                _diceManager.ThrowDices(_inventoryGrid.Items, _selectedClass);
+                _gameLog.AddMessage("Rolling dice...", Color.White);
+                _hudOverlay.SetPortraitState(PortraitState.Attacking, 1.0f);
+            }
+        };
     }
 
     private void InitSkills()
@@ -391,17 +435,16 @@ public class CoreGame : Game
                 break;
         }
 
-        int startX = (int)(VirtualWidth * 0.25f) + 20;
-        int startY = (int)(VirtualHeight * 0.8f) - 70;
-        int btnWidth = 150;
-        int btnHeight = 50;
-        int spacing = 10;
+        Rectangle skillsArea = _infoPanel.GetSkillsArea();
+        int btnWidth = skillsArea.Width - 20;
+        int btnHeight = 60;
+        int spacing = 15;
 
         for (int i = 0; i < _playerSkills.Count; i++)
         {
             var skill = _playerSkills[i];
-            var btn = new Button(new Rectangle(startX + (i * (btnWidth + spacing)), startY, btnWidth, btnHeight), 
-                $"{skill.Name}\n{skill.ManaCost} MP", _font, GraphicsDevice);
+            var btn = new Button(new Rectangle(skillsArea.X + 10, skillsArea.Y + 40 + (i * (btnHeight + spacing)), btnWidth, btnHeight), 
+                $"{skill.Name} ({skill.ManaCost} MP)", _alagardFont, GraphicsDevice);
             
             btn.OnClick += () => UseSkill(skill);
             _skillButtons.Add(btn);
@@ -421,10 +464,8 @@ public class CoreGame : Game
                 case SkillType.Heal:
                     if (_playerHp < _playerMaxHp)
                     {
-                        _playerHp = Math.Min(_playerHp + skill.Value, _playerMaxHp);
+                        HealPlayer(skill.Value);
                         _gameLog.AddMessage($"Used {skill.Name}. Healed {skill.Value} HP.", Color.Cyan);
-                        _effectManager.AddText(new Vector2(VirtualWidth/2, VirtualHeight/2), $"+{skill.Value} HP", Color.Green);
-                        _effectManager.AddHealEffect(new Vector2(VirtualWidth/2, VirtualHeight/2));
                         success = true;
                     }
                     else
@@ -450,9 +491,10 @@ public class CoreGame : Game
                         {
                             _gameLog.AddMessage($"{_currentEnemy.Name} is defeated!", Color.Green);
                             _effectManager.AddExplosion(enemyCenter, Color.Gold, 30); 
-                            GenerateLoot();
+                            OnEnemyDefeated();
                         }
                         success = true;
+                        _hudOverlay.SetPortraitState(PortraitState.Attacking, 1.0f);
                     }
                     else
                     {
@@ -470,6 +512,7 @@ public class CoreGame : Game
                         _diceManager.ThrowDices(_inventoryGrid.Items, _selectedClass);
                         _gameLog.AddMessage($"Used {skill.Name}. Rerolling dice...", Color.Cyan);
                         success = true;
+                        _hudOverlay.SetPortraitState(PortraitState.Attacking, 1.0f);
                     }
                     break;
             }
@@ -477,7 +520,7 @@ public class CoreGame : Game
             if (success)
             {
                 _playerMana -= skill.ManaCost;
-                _hudOverlay.UpdateStats(_playerHp, _playerMaxHp, _playerMana, _playerMaxMana, _floorManager.DungeonLevel, _floorManager.RoomNumber);
+                UpdateHud();
                 SaveGame();
             }
         }
@@ -487,12 +530,126 @@ public class CoreGame : Game
         }
     }
 
+    public void ApplyPlayerEffect(StatusEffectType type, int duration, int intensity = 1)
+    {
+        var existing = _playerEffects.FirstOrDefault(e => e.Type == type);
+        if (existing != null)
+        {
+            existing.Duration += duration;
+            existing.Intensity = Math.Max(existing.Intensity, intensity);
+        }
+        else
+        {
+            _playerEffects.Add(new StatusEffect(type, duration, intensity));
+        }
+    }
+
+    private void ProcessPlayerEffects()
+    {
+        int totalDamage = 0;
+        var toRemove = new List<StatusEffect>();
+
+        foreach (var effect in _playerEffects)
+        {
+            switch (effect.Type)
+            {
+                case StatusEffectType.Poison:
+                    totalDamage += effect.Intensity;
+                    _gameLog.AddMessage($"Poison deals {effect.Intensity} DMG.", Color.GreenYellow);
+                    break;
+                case StatusEffectType.Regen:
+                    HealPlayer(effect.Intensity);
+                    _gameLog.AddMessage($"Regen heals {effect.Intensity} HP.", Color.LimeGreen);
+                    break;
+            }
+            
+            effect.Duration--;
+            if (effect.Duration <= 0) toRemove.Add(effect);
+        }
+
+        foreach (var e in toRemove) _playerEffects.Remove(e);
+        if (totalDamage > 0) DamagePlayer(totalDamage);
+    }
+
+    public void HealPlayer(int amount)
+    {
+        _playerHp = Math.Min(_playerHp + amount, _playerMaxHp);
+        _effectManager.AddText(new Vector2(VirtualWidth/2, VirtualHeight/2), $"+{amount} HP", Color.Green);
+        _effectManager.AddHealEffect(new Vector2(VirtualWidth/2, VirtualHeight/2));
+        _hudOverlay.SetPortraitState(PortraitState.Healing, 1.0f);
+        UpdateHud();
+    }
+
+    public void DamagePlayer(int amount)
+    {
+        int finalDamage = amount;
+        
+        var shield = _playerEffects.FirstOrDefault(e => e.Type == StatusEffectType.Shield);
+        if (shield != null)
+        {
+            if (shield.Intensity >= finalDamage)
+            {
+                shield.Intensity -= finalDamage;
+                finalDamage = 0;
+            }
+            else
+            {
+                finalDamage -= shield.Intensity;
+                _playerEffects.Remove(shield);
+            }
+        }
+
+        if (_playerEffects.Any(e => e.Type == StatusEffectType.Vulnerable))
+            finalDamage = (int)(finalDamage * 1.5f);
+
+        _playerHp -= finalDamage;
+        if (_playerHp < 0) _playerHp = 0;
+        
+        if (finalDamage > 0)
+        {
+            _effectManager.AddDamageText(new Vector2(VirtualWidth/2, VirtualHeight/2 + 200), finalDamage, true);
+            _effectManager.AddBloodEffect(new Vector2(VirtualWidth/2, VirtualHeight/2 + 200));
+            _effectManager.TriggerFlash(Color.Red * 0.3f, 0.3f);
+            _effectManager.TriggerShake(10f, 0.3f);
+            _hudOverlay.SetPortraitState(PortraitState.Damaged, 1.0f);
+        }
+        
+        UpdateHud();
+        
+        if (_playerHp <= 0)
+        {
+            _currentState = GameState.GameOver;
+            SaveManager.DeleteSave(_currentSlotIndex);
+        }
+    }
+
+    public void AddGold(int amount)
+    {
+        _playerGold += amount;
+        _effectManager.AddGoldEffect(new Vector2(VirtualWidth/2, VirtualHeight/2));
+        UpdateHud();
+    }
+
+    public void AddMana(int amount)
+    {
+        _playerMana = Math.Min(_playerMana + amount, _playerMaxMana);
+        UpdateHud();
+    }
+
+    public void UpdateHud()
+    {
+        _hudOverlay.UpdateStats(_playerHp, _playerMaxHp, _playerMana, _playerMaxMana, _floorManager.DungeonLevel, _floorManager.RoomNumber);
+    }
+
     private void StartGame(PlayerClass pClass)
     {
         _selectedClass = pClass;
+        _playerEffects.Clear();
         
         InitGameplayComponents();
         InitSkills();
+        
+        _hudOverlay.SetPlayerClass(pClass); // Charger les portraits de la classe
         
         _playerRelics = new List<Relic>();
         _playerGold = 50; 
@@ -526,7 +683,7 @@ public class CoreGame : Game
         _playerMana = _playerMaxMana;
         
         _floorManager = new FloorManager(1);
-        _hudOverlay.UpdateStats(_playerHp, _playerMaxHp, _playerMana, _playerMaxMana, _floorManager.DungeonLevel, _floorManager.RoomNumber);
+        UpdateHud();
 
         _currentState = GameState.RoomSelection;
         GenerateRoomSelection();
@@ -595,9 +752,12 @@ public class CoreGame : Game
         if (data == null) return;
 
         _selectedClass = data.Class;
+        _playerEffects.Clear();
         
         InitGameplayComponents();
         InitSkills();
+        
+        _hudOverlay.SetPlayerClass(data.Class); // Charger les portraits
         
         _playerHp = data.Hp;
         _playerMaxHp = data.MaxHp;
@@ -639,9 +799,7 @@ public class CoreGame : Game
         }
         
         _floorManager = new FloorManager(data);
-        
-        _hudOverlay.UpdateStats(_playerHp, _playerMaxHp, _playerMana, _playerMaxMana, _floorManager.DungeonLevel, _floorManager.RoomNumber);
-        
+        UpdateHud();
         LoadCurrentRoom();
     }
 
@@ -656,12 +814,8 @@ public class CoreGame : Game
                 _gameLog.AddMessage($"Relic {relic.Name} boosted heal!", Color.Cyan);
             }
             
-            _playerHp = Math.Min(_playerHp + heal, _playerMaxHp);
-            _hudOverlay.UpdateStats(_playerHp, _playerMaxHp, _playerMana, _playerMaxMana, _floorManager.DungeonLevel, _floorManager.RoomNumber);
+            HealPlayer(heal);
             _gameLog.AddMessage($"Used {item.Name}. Recovered {heal} HP.", Color.Green);
-            
-            _effectManager.AddText(new Vector2(VirtualWidth/2, VirtualHeight/2), $"+{heal} HP", Color.Green);
-            _effectManager.AddHealEffect(new Vector2(VirtualWidth/2, VirtualHeight/2));
             _effectManager.TriggerFlash(Color.Green * 0.5f, 0.2f);
             
             _inventoryGrid.RemoveItem(item);
@@ -681,6 +835,9 @@ public class CoreGame : Game
 
         _currentEnemy = null;
         _waitingForNextRoom = false;
+        _waitingForNextFloor = false;
+        _playerEffects.Clear(); 
+        _diceManager.ClearDices(); 
 
         if (room.Type == RoomType.Combat || room.Type == RoomType.Elite || room.Type == RoomType.Boss)
         {
@@ -691,27 +848,33 @@ public class CoreGame : Game
             {
                 if (relic.StatTarget == "Mana")
                 {
-                    _playerMana = Math.Min(_playerMana + relic.Value, _playerMaxMana);
+                    AddMana(relic.Value);
                     _gameLog.AddMessage($"Relic {relic.Name} restored {relic.Value} Mana.", Color.Cyan);
                 }
             }
-            _hudOverlay.UpdateStats(_playerHp, _playerMaxHp, _playerMana, _playerMaxMana, _floorManager.DungeonLevel, _floorManager.RoomNumber);
+            UpdateHud();
         }
         else if (room.Type == RoomType.Rest)
         {
             _currentState = GameState.Playing;
-            int heal = 30;
-            int mana = 20;
-            _playerHp = Math.Min(_playerHp + heal, _playerMaxHp);
-            _playerMana = Math.Min(_playerMana + mana, _playerMaxMana);
-            _hudOverlay.UpdateStats(_playerHp, _playerMaxHp, _playerMana, _playerMaxMana, _floorManager.DungeonLevel, _floorManager.RoomNumber);
             
-            _gameLog.AddMessage($"You rest. +{heal} HP, +{mana} MP.", Color.Green);
-            _effectManager.AddText(new Vector2(VirtualWidth/2, VirtualHeight/2), "RESTING...", Color.Cyan);
-            _effectManager.AddHealEffect(new Vector2(VirtualWidth/2, VirtualHeight/2));
-            
-            _waitingForNextRoom = true;
-            _gameLog.AddMessage("Press ENTER to continue.", Color.Yellow);
+            if (room.EnemyName == "Treasure")
+            {
+                _gameLog.AddMessage("You found a hidden stash of loot!", Color.Gold);
+                _waitingForNextRoom = true;
+                GenerateLoot();
+            }
+            else
+            {
+                int heal = 30;
+                int mana = 20;
+                HealPlayer(heal);
+                AddMana(mana);
+                _gameLog.AddMessage($"You rest. +{heal} HP, +{mana} MP.", Color.Green);
+                _effectManager.AddText(new Vector2(VirtualWidth/2, VirtualHeight/2), "RESTING...", Color.Cyan);
+                _waitingForNextRoom = true;
+                _gameLog.AddMessage("Press ENTER to continue.", Color.Yellow);
+            }
             
             SaveGame(); 
         }
@@ -730,38 +893,37 @@ public class CoreGame : Game
     private void GenerateRoomSelection()
     {
         _nextRoomOptions = _floorManager.GenerateNextRoomOptions();
-        _roomButtons = new List<Button>();
+        _roomCards = new List<RoomCard>();
         
-        int startX = VirtualWidth / 2 - 300;
-        int y = VirtualHeight / 2 - 100;
+        int cardWidth = 350;
+        int cardHeight = 500;
+        int spacing = 60;
+        int totalWidth = (_nextRoomOptions.Count * cardWidth) + ((_nextRoomOptions.Count - 1) * spacing);
+        int startX = (VirtualWidth - totalWidth) / 2;
+        int y = (VirtualHeight - cardHeight) / 2 + 50;
         
-        if (_nextRoomOptions.Count == 1)
+        for (int i = 0; i < _nextRoomOptions.Count; i++)
         {
-            var room = _nextRoomOptions[0];
-            var btn = new Button(new Rectangle(VirtualWidth/2 - 100, y, 200, 250), $"BOSS\n{room.EnemyName}", _font, GraphicsDevice);
-            btn.OnClick += () => {
+            var room = _nextRoomOptions[i];
+            var rect = new Rectangle(startX + (i * (cardWidth + spacing)), y, cardWidth, cardHeight);
+            
+            Texture2D tex = room.Type switch {
+                RoomType.Combat => _texRoomBattle,
+                RoomType.Elite => _texRoomElite,
+                RoomType.Boss => _texRoomBoss,
+                RoomType.Shop => _texRoomShop,
+                RoomType.Rest => _texRoomRest,
+                _ => _texRoomEvent
+            };
+
+            var card = new RoomCard(room, rect, GraphicsDevice, _alagardFont, _titleFont, tex);
+            
+            card.OnClick += () => {
                 _floorManager.SetNextRoom(room);
                 LoadCurrentRoom();
                 SaveGame();
             };
-            _roomButtons.Add(btn);
-        }
-        else
-        {
-            for (int i = 0; i < _nextRoomOptions.Count; i++)
-            {
-                var room = _nextRoomOptions[i];
-                string text = $"{room.Type}";
-                if (room.Type == RoomType.Combat) text += $"\n{room.EnemyName}";
-                
-                var btn = new Button(new Rectangle(startX + (i * 220), y, 200, 250), text, _font, GraphicsDevice);
-                btn.OnClick += () => {
-                    _floorManager.SetNextRoom(room);
-                    LoadCurrentRoom();
-                    SaveGame();
-                };
-                _roomButtons.Add(btn);
-            }
+            _roomCards.Add(card);
         }
         
         _currentState = GameState.RoomSelection;
@@ -770,10 +932,12 @@ public class CoreGame : Game
     private void InitShop()
     {
         _shopButtons = new List<Button>();
-        int centerX = VirtualWidth / 2;
-        int startY = 300;
+        int sideWidth = (int)(VirtualWidth * 0.25f);
+        int centerWidth = VirtualWidth - (sideWidth * 2);
+        int centerX = sideWidth + centerWidth / 2;
+        int startY = 500;
         
-        var btnPotion = new Button(new Rectangle(centerX - 200, startY, 400, 60), "Buy Potion (50G)", _font, GraphicsDevice);
+        var btnPotion = new Button(new Rectangle(centerX - 200, startY, 400, 60), "Buy Potion (50G)", _alagardFont, GraphicsDevice);
         btnPotion.OnClick += () => {
             if (_playerGold >= 50)
             {
@@ -786,7 +950,7 @@ public class CoreGame : Game
         };
         _shopButtons.Add(btnPotion);
         
-        var btnItem = new Button(new Rectangle(centerX - 200, startY + 80, 400, 60), "Buy Random Item (100G)", _font, GraphicsDevice);
+        var btnItem = new Button(new Rectangle(centerX - 200, startY + 80, 400, 60), "Buy Random Item (100G)", _alagardFont, GraphicsDevice);
         btnItem.OnClick += () => {
             if (_playerGold >= 100)
             {
@@ -799,7 +963,7 @@ public class CoreGame : Game
         };
         _shopButtons.Add(btnItem);
         
-        var btnLeave = new Button(new Rectangle(centerX - 100, startY + 200, 200, 60), "Leave", _font, GraphicsDevice);
+        var btnLeave = new Button(new Rectangle(centerX - 100, startY + 200, 200, 60), "Leave", _alagardFont, GraphicsDevice);
         btnLeave.OnClick += () => {
             GenerateRoomSelection();
         };
@@ -808,45 +972,26 @@ public class CoreGame : Game
     
     private void InitEvent()
     {
+        _currentEvent = EventManager.GenerateEvent(_floorManager.DungeonLevel);
         _eventButtons = new List<Button>();
-        int centerX = VirtualWidth / 2;
-        int startY = 400;
         
-        _eventText = "You find a strange altar. Do you want to pray?";
+        int sideWidth = (int)(VirtualWidth * 0.25f);
+        int centerWidth = VirtualWidth - (sideWidth * 2);
+        int centerX = sideWidth + centerWidth / 2;
+        int startY = 500;
         
-        var btnPray = new Button(new Rectangle(centerX - 250, startY, 200, 60), "Pray (-20G, +50HP)", _font, GraphicsDevice);
-        btnPray.OnClick += () => {
-            if (_playerGold >= 20)
-            {
-                _playerGold -= 20;
-                _playerHp = Math.Min(_playerHp + 50, _playerMaxHp);
-                _gameLog.AddMessage("You feel blessed.", Color.Green);
-                _effectManager.AddHealEffect(new Vector2(VirtualWidth/2, VirtualHeight/2));
+        for (int i = 0; i < _currentEvent.Choices.Count; i++)
+        {
+            var choice = _currentEvent.Choices[i];
+            var btn = new Button(new Rectangle(centerX - 250, startY + (i * 80), 500, 60), choice.Text, _alagardFont, GraphicsDevice);
+            btn.OnClick += () => {
+                _gameLog.AddMessage(choice.ResultMessage, Color.Cyan);
+                choice.Action?.Invoke(this);
                 GenerateRoomSelection();
-            }
-            else _gameLog.AddMessage("You need an offering.", Color.Red);
-        };
-        _eventButtons.Add(btnPray);
-        
-        var btnSteal = new Button(new Rectangle(centerX + 50, startY, 200, 60), "Steal (+50G, -20HP)", _font, GraphicsDevice);
-        btnSteal.OnClick += () => {
-            _playerGold += 50;
-            _playerHp -= 20;
-            _gameLog.AddMessage("You stole from the altar!", Color.Red);
-            _effectManager.AddBloodEffect(new Vector2(VirtualWidth/2, VirtualHeight/2));
-            _effectManager.TriggerShake(5f, 0.2f);
-            
-            if (_playerHp <= 0) _currentState = GameState.GameOver;
-            else GenerateRoomSelection();
-        };
-        _eventButtons.Add(btnSteal);
-        
-        var btnIgnore = new Button(new Rectangle(centerX - 100, startY + 100, 200, 60), "Ignore", _font, GraphicsDevice);
-        btnIgnore.OnClick += () => {
-            _gameLog.AddMessage("You walk away.", Color.White);
-            GenerateRoomSelection();
-        };
-        _eventButtons.Add(btnIgnore);
+                SaveGame();
+            };
+            _eventButtons.Add(btn);
+        }
     }
 
     private void SpawnEnemy(string name, int hp, int minDmg, int maxDmg)
@@ -856,7 +1001,7 @@ public class CoreGame : Game
         int gameHeight = (int)(VirtualHeight * 0.8f);
         Rectangle arenaBounds = new Rectangle(sideWidth, 0, centerWidth, gameHeight);
 
-        _currentEnemy = new Enemy(name, hp, minDmg, maxDmg, GraphicsDevice, _font);
+        _currentEnemy = new Enemy(name, hp, minDmg, maxDmg, GraphicsDevice, _alagardFont);
         
         int x = arenaBounds.Center.X - (_currentEnemy.Bounds.Width / 2);
         int y = arenaBounds.Center.Y - (_currentEnemy.Bounds.Height / 2) - 50;
@@ -869,37 +1014,49 @@ public class CoreGame : Game
     private void GenerateLoot()
     {
         _lootOptions = new List<Item>();
-        _lootRects = new Rectangle[3];
+        _lootCards = new List<LootCard>();
         
-        int startX = VirtualWidth / 2 - 300;
-        int y = VirtualHeight / 2 - 100;
+        int cardWidth = 350;
+        int cardHeight = 500;
+        int spacing = 60;
+        int startX = (VirtualWidth - (3 * cardWidth + 2 * spacing)) / 2;
+        int y = (VirtualHeight - cardHeight) / 2 + 50;
         
         int goldGain = _random.Next(10, 30) + (_floorManager.DungeonLevel * 5);
-        _playerGold += goldGain;
+        AddGold(goldGain);
         _gameLog.AddMessage($"You found {goldGain} Gold!", Color.Gold);
-        _effectManager.AddGoldEffect(new Vector2(VirtualWidth/2, VirtualHeight/2));
 
-        if (_random.NextDouble() < 0.10)
+        for (int i = 0; i < 3; i++)
         {
-            var relicItem = new Item("Mysterious Relic", 1, 1, Color.Gold, DiceType.None, ItemType.Other);
-            relicItem.Description = "A powerful artifact.";
-            relicItem.Rarity = ItemRarity.Unique;
-            _lootOptions.Add(relicItem);
-            _lootRects[0] = new Rectangle(startX, y, 200, 250);
+            var item = ItemGenerator.GenerateItem(_floorManager.DungeonLevel);
+            _lootOptions.Add(item);
             
-            for (int i = 1; i < 3; i++)
-            {
-                _lootOptions.Add(ItemGenerator.GenerateItem(_floorManager.RoomNumber));
-                _lootRects[i] = new Rectangle(startX + (i * 220), y, 200, 250);
-            }
-        }
-        else
-        {
-            for (int i = 0; i < 3; i++)
-            {
-                _lootOptions.Add(ItemGenerator.GenerateItem(_floorManager.RoomNumber));
-                _lootRects[i] = new Rectangle(startX + (i * 220), y, 200, 250);
-            }
+            var rect = new Rectangle(startX + (i * (cardWidth + spacing)), y, cardWidth, cardHeight);
+            
+            Texture2D tex = item.Rarity switch {
+                ItemRarity.Magic => _texItemMagic,
+                ItemRarity.Rare => _texItemRare,
+                ItemRarity.Unique => _texItemUnique,
+                _ => _texItemCommon
+            };
+
+            var card = new LootCard(item, rect, GraphicsDevice, _alagardFont, _titleFont, tex);
+            
+            card.OnClick += () => {
+                _inventoryGrid.AddItem(item);
+                _gameLog.AddMessage($"You picked: {item.Name}", Color.Green);
+                if (_waitingForNextFloor)
+                {
+                    _floorManager.AdvanceToNextFloor();
+                    LoadCurrentRoom();
+                }
+                else
+                {
+                    GenerateRoomSelection();
+                }
+                SaveGame();
+            };
+            _lootCards.Add(card);
         }
         
         _currentState = GameState.Loot;
@@ -908,12 +1065,34 @@ public class CoreGame : Game
         SaveGame(); 
     }
 
+    private void OnEnemyDefeated()
+    {
+        if (_floorManager.CurrentRoom.Type == RoomType.Boss)
+        {
+            _gameLog.AddMessage("THE BOSS IS DEAD! You found the stairs to the next floor.", Color.Gold);
+            _waitingForNextFloor = true;
+            _gameLog.AddMessage("Press ENTER to descend.", Color.Yellow);
+        }
+        else
+        {
+            GenerateLoot();
+        }
+    }
+
     private void OnTurnFinished(int totalDamage)
     {
         if (_currentState == GameState.GameOver) return;
 
         if (_currentEnemy != null && !_currentEnemy.IsDead)
         {
+            foreach (var item in _inventoryGrid.Items.Where(i => i.EffectType.HasValue))
+            {
+                if (item.EffectType == StatusEffectType.Shield || item.EffectType == StatusEffectType.Regen)
+                    ApplyPlayerEffect(item.EffectType.Value, 1, item.EffectValue);
+                else
+                    _currentEnemy.ApplyEffect(item.EffectType.Value, 1, item.EffectValue);
+            }
+
             int strBonus = _currentStr / 2;
             int finalDamage = totalDamage + strBonus;
             
@@ -927,43 +1106,70 @@ public class CoreGame : Game
             {
                 _gameLog.AddMessage($"{_currentEnemy.Name} is defeated!", Color.Green);
                 _effectManager.AddExplosion(enemyCenter, Color.Gold, 30); 
-                GenerateLoot();
+                OnEnemyDefeated();
+                _diceManager.ClearDices(); 
             }
             else
             {
-                int enemyDmg = _currentEnemy.Attack();
-                int defense = _currentDex / 5;
-                int finalEnemyDmg = Math.Max(0, enemyDmg - defense);
+                _gameLog.AddMessage($"--- {_currentEnemy.Name}'s Turn ---", Color.Gray);
                 
-                _playerHp -= finalEnemyDmg;
-                if (_playerHp < 0) _playerHp = 0;
-                
-                _hudOverlay.UpdateStats(_playerHp, _playerMaxHp, _playerMana, _playerMaxMana, _floorManager.DungeonLevel, _floorManager.RoomNumber);
-                _gameLog.AddMessage($"{_currentEnemy.Name} attacks for {finalEnemyDmg} damage! (Blocked: {defense})", Color.Red);
-                
-                if (finalEnemyDmg > 0)
-                {
-                    _effectManager.TriggerFlash(Color.Red * 0.3f, 0.3f);
-                    _effectManager.TriggerShake(10f, 0.3f);
-                    _effectManager.AddDamageText(new Vector2(VirtualWidth/2, VirtualHeight/2 + 200), finalEnemyDmg, true);
-                    _effectManager.AddBloodEffect(new Vector2(VirtualWidth/2, VirtualHeight/2 + 200)); 
-                }
+                int dot = _currentEnemy.ProcessEffects();
+                if (dot > 0) _gameLog.AddMessage($"{_currentEnemy.Name} takes {dot} DOT damage.", Color.GreenYellow);
 
-                if (_playerHp <= 0)
+                if (!_currentEnemy.IsDead)
                 {
-                    _currentState = GameState.GameOver;
-                    _gameLog.AddMessage("YOU DIED. Game Over.", Color.DarkRed);
-                    _gameLog.AddMessage("Press R to return to Title.", Color.White);
-                    SaveManager.DeleteSave(_currentSlotIndex); 
+                    EnemyAbility ability = _currentEnemy.ChooseAbility();
+                    _gameLog.AddMessage($"{_currentEnemy.Name} uses {ability.Name}!", Color.Red);
+
+                    switch (ability.Type)
+                    {
+                        case AbilityType.Attack:
+                            int dmg = _currentEnemy.GetAttackDamage();
+                            int defense = _currentDex / 5;
+                            int finalDmg = Math.Max(0, dmg - defense);
+                            DamagePlayer(finalDmg);
+                            _gameLog.AddMessage($"Dealt {finalDmg} damage.", Color.Red);
+                            break;
+
+                        case AbilityType.Heal:
+                            _currentEnemy.Hp = Math.Min(_currentEnemy.Hp + ability.Value, _currentEnemy.MaxHp);
+                            _gameLog.AddMessage($"Healed for {ability.Value} HP.", Color.Green);
+                            break;
+
+                        case AbilityType.BuffShield:
+                            _currentEnemy.ApplyEffect(StatusEffectType.Shield, 1, ability.Value);
+                            _gameLog.AddMessage($"Gained {ability.Value} Shield.", Color.Blue);
+                            break;
+
+                        case AbilityType.DebuffPlayer:
+                            if (ability.EffectType.HasValue)
+                                ApplyPlayerEffect(ability.EffectType.Value, 2, ability.Value);
+                            _gameLog.AddMessage($"Applied {ability.EffectType} to you.", Color.Yellow);
+                            break;
+
+                        case AbilityType.StealGold:
+                            int stolenGold = Math.Min(_playerGold, ability.Value);
+                            _playerGold -= stolenGold;
+                            _gameLog.AddMessage($"Stole {stolenGold} Gold!", Color.Gold);
+                            break;
+
+                        case AbilityType.StealMana:
+                            int stolenMana = Math.Min(_playerMana, ability.Value);
+                            _playerMana -= stolenMana;
+                            _gameLog.AddMessage($"Stole {stolenMana} Mana!", Color.Purple);
+                            break;
+                    }
+                    
+                    ProcessPlayerEffects();
+                    _diceManager.ClearDices(); 
+                }
+                else
+                {
+                    _gameLog.AddMessage($"{_currentEnemy.Name} died from status effects!", Color.Green);
+                    OnEnemyDefeated();
+                    _diceManager.ClearDices(); 
                 }
             }
-        }
-        else if (_waitingForNextRoom)
-        {
-        }
-        else
-        {
-            _gameLog.AddMessage($"Rolled {totalDamage}, but no target!", Color.Gray);
         }
     }
 
@@ -1002,6 +1208,7 @@ public class CoreGame : Game
             (mouseScreenPos.Y - _destinationRectangle.Y) * scaleY
         );
         bool isLeftPressed = mouseState.LeftButton == ButtonState.Pressed;
+        bool isLeftClicked = mouseState.LeftButton == ButtonState.Pressed && _prevMouseState.LeftButton == ButtonState.Released;
 
         for (int i = 0; i < _bgParticles.Count; i++)
         {
@@ -1029,11 +1236,15 @@ public class CoreGame : Game
                 _backButton.Update(mouseVirtualPos, isLeftPressed);
                 break;
             case GameState.Options:
-                foreach (var btn in _optionButtons) btn.Update(mouseVirtualPos, isLeftPressed);
+                foreach (var btn in _optionButtons) btn.Update(new Vector2(Mouse.GetState().X, Mouse.GetState().Y), Mouse.GetState().LeftButton == ButtonState.Pressed);
+                foreach (var btn in _optionButtons) btn.Draw(_spriteBatch);
                 _backButton.Update(mouseVirtualPos, isLeftPressed);
                 break;
             case GameState.RoomSelection:
-                foreach (var btn in _roomButtons) btn.Update(mouseVirtualPos, isLeftPressed);
+                if (_roomCards != null)
+                {
+                    foreach (var card in _roomCards) card.Update(gameTime, mouseVirtualPos, isLeftClicked);
+                }
                 break;
             case GameState.Shop:
                 foreach (var btn in _shopButtons) btn.Update(mouseVirtualPos, isLeftPressed);
@@ -1045,7 +1256,10 @@ public class CoreGame : Game
                 UpdatePlaying(gameTime, mouseVirtualPos, isLeftPressed, mouseState, keyboardState);
                 break;
             case GameState.Loot:
-                UpdateLoot(mouseState, mouseVirtualPos);
+                if (_lootCards != null)
+                {
+                    foreach (var card in _lootCards) card.Update(gameTime, mouseVirtualPos, isLeftClicked);
+                }
                 break;
             case GameState.GameOver:
                 UpdateGameOver(keyboardState);
@@ -1066,39 +1280,6 @@ public class CoreGame : Game
         }
     }
 
-    private void UpdateLoot(MouseState mouseState, Vector2 mouseVirtualPos)
-    {
-        if (mouseState.LeftButton == ButtonState.Pressed && _prevMouseState.LeftButton == ButtonState.Released)
-        {
-            for (int i = 0; i < _lootRects.Length; i++)
-            {
-                if (_lootRects[i].Contains(mouseVirtualPos))
-                {
-                    var selectedItem = _lootOptions[i];
-                    
-                    if (selectedItem.Name == "Mysterious Relic")
-                    {
-                        var relic = new Relic("Holy Grail", "Heals +10 HP when using potions.", RelicEffectType.OnHeal, 10);
-                        if (_random.Next(2) == 0)
-                            relic = new Relic("Mana Crystal", "+10 Mana at start of combat.", RelicEffectType.StartOfCombat, 10, "Mana");
-                        
-                        _playerRelics.Add(relic);
-                        _gameLog.AddMessage($"You obtained Relic: {relic.Name}!", Color.Gold);
-                    }
-                    else
-                    {
-                        _inventoryGrid.AddItem(selectedItem);
-                        _gameLog.AddMessage($"You picked: {selectedItem.Name}", Color.Green);
-                    }
-                    
-                    GenerateRoomSelection();
-                    SaveGame(); 
-                    break;
-                }
-            }
-        }
-    }
-
     private void UpdatePlaying(GameTime gameTime, Vector2 mouseVirtualPos, bool isLeftPressed, MouseState mouseState, KeyboardState keyboardState)
     {
         bool isRightClicked = mouseState.RightButton == ButtonState.Pressed && 
@@ -1109,6 +1290,13 @@ public class CoreGame : Game
         if (_skillButtons != null)
         {
             foreach (var btn in _skillButtons) btn.Update(mouseVirtualPos, isLeftPressed);
+        }
+
+        bool canRoll = !_diceManager.IsRolling && !_waitingForNextRoom && !_waitingForNextFloor && _currentEnemy != null;
+        if (canRoll)
+        {
+            _rollDiceButton.Update(mouseVirtualPos, isLeftPressed);
+            _rollButtonTimer += (float)gameTime.ElapsedGameTime.TotalSeconds;
         }
         
         _currentStr = _baseStr + _inventoryGrid.TotalStr;
@@ -1128,19 +1316,11 @@ public class CoreGame : Game
         
         if (keyboardState.IsKeyDown(Keys.Space) && !_prevKeyboardState.IsKeyDown(Keys.Space))
         {
-            if (!_diceManager.IsRolling && !_waitingForNextRoom && _currentEnemy != null)
+            if (canRoll)
             {
                 _diceManager.ThrowDices(_inventoryGrid.Items, _selectedClass);
                 _gameLog.AddMessage("Rolling dice...", Color.White);
-            }
-        }
-        
-        if (keyboardState.IsKeyDown(Keys.D) && !_prevKeyboardState.IsKeyDown(Keys.D))
-        {
-            if (!_diceManager.IsRolling)
-            {
-                _diceManager.DebugSpawnAllDice();
-                _gameLog.AddMessage("DEBUG: Rolling ALL dice!", Color.Yellow);
+                _hudOverlay.SetPortraitState(PortraitState.Attacking, 1.0f);
             }
         }
         
@@ -1151,9 +1331,16 @@ public class CoreGame : Game
                 GenerateRoomSelection();
                 SaveGame();
             }
+            else if (_waitingForNextFloor)
+            {
+                _floorManager.AdvanceToNextFloor();
+                LoadCurrentRoom();
+                SaveGame();
+            }
         }
         
         _diceManager.Update(gameTime);
+        _hudOverlay.Update(gameTime, _playerHp, _playerMaxHp); 
     }
 
     protected override void Draw(GameTime gameTime)
@@ -1183,11 +1370,7 @@ public class CoreGame : Game
                 DrawRoomSelection();
                 break;
             case GameState.Shop:
-                DrawShop();
-                break;
             case GameState.Event:
-                DrawEvent();
-                break;
             case GameState.Playing:
             case GameState.GameOver:
                 DrawPlaying(gameTime);
@@ -1228,52 +1411,23 @@ public class CoreGame : Game
     private void DrawRoomSelection()
     {
         DrawPlaying(null);
-        _spriteBatch.Draw(_pixel, new Rectangle(0, 0, VirtualWidth, VirtualHeight), Color.Black * 0.8f);
+        _spriteBatch.Draw(_pixel, new Rectangle(0, 0, VirtualWidth, VirtualHeight), Color.Black * 0.85f);
         
-        if (_titleFont != null)
+        if (_alagardFont != null)
         {
             string title = "CHOOSE YOUR PATH";
-            Vector2 size = _titleFont.MeasureString(title);
-            _spriteBatch.DrawString(_titleFont, title, new Vector2((VirtualWidth - size.X)/2, 100), Color.White);
-        }
-
-        foreach (var btn in _roomButtons) btn.Draw(_spriteBatch);
-    }
-    
-    private void DrawShop()
-    {
-        DrawPlaying(null);
-        _spriteBatch.Draw(_pixel, new Rectangle(0, 0, VirtualWidth, VirtualHeight), Color.Black * 0.8f);
-        
-        if (_titleFont != null)
-        {
-            string title = "MERCHANT";
-            Vector2 size = _titleFont.MeasureString(title);
-            _spriteBatch.DrawString(_titleFont, title, new Vector2((VirtualWidth - size.X)/2, 100), Color.Gold);
+            Vector2 size = _alagardFont.MeasureString(title);
+            _spriteBatch.DrawString(_alagardFont, title, new Vector2((VirtualWidth - size.X)/2, 100), Color.White);
             
-            string gold = $"Gold: {_playerGold}";
-            _spriteBatch.DrawString(_font, gold, new Vector2(VirtualWidth/2 - 50, 200), Color.Yellow);
+            string floor = $"FLOOR {_floorManager.DungeonLevel}-{_floorManager.RoomNumber}";
+            Vector2 fSize = _alagardFont.MeasureString(floor);
+            _spriteBatch.DrawString(_alagardFont, floor, new Vector2((VirtualWidth - fSize.X)/2, 180), Color.Gold);
         }
 
-        foreach (var btn in _shopButtons) btn.Draw(_spriteBatch);
-    }
-    
-    private void DrawEvent()
-    {
-        DrawPlaying(null);
-        _spriteBatch.Draw(_pixel, new Rectangle(0, 0, VirtualWidth, VirtualHeight), Color.Black * 0.8f);
-        
-        if (_titleFont != null)
+        if (_roomCards != null)
         {
-            string title = "EVENT";
-            Vector2 size = _titleFont.MeasureString(title);
-            _spriteBatch.DrawString(_titleFont, title, new Vector2((VirtualWidth - size.X)/2, 100), Color.Cyan);
-            
-            Vector2 textSize = _font.MeasureString(_eventText);
-            _spriteBatch.DrawString(_font, _eventText, new Vector2((VirtualWidth - textSize.X)/2, 250), Color.White);
+            foreach (var card in _roomCards) card.Draw(_spriteBatch);
         }
-
-        foreach (var btn in _eventButtons) btn.Draw(_spriteBatch);
     }
 
     private void DrawBackground()
@@ -1288,43 +1442,18 @@ public class CoreGame : Game
 
     private void DrawLootOverlay()
     {
-        _spriteBatch.Draw(_pixel, new Rectangle(0, 0, VirtualWidth, VirtualHeight), Color.Black * 0.8f);
+        _spriteBatch.Draw(_pixel, new Rectangle(0, 0, VirtualWidth, VirtualHeight), Color.Black * 0.85f);
         
-        if (_titleFont != null)
+        if (_alagardFont != null)
         {
             string title = "CHOOSE YOUR REWARD";
-            Vector2 titleSize = _titleFont.MeasureString(title);
-            _spriteBatch.DrawString(_titleFont, title, new Vector2((VirtualWidth - titleSize.X)/2, 200), Color.White);
+            Vector2 titleSize = _alagardFont.MeasureString(title);
+            _spriteBatch.DrawString(_alagardFont, title, new Vector2((VirtualWidth - titleSize.X)/2, 100), Color.Gold);
         }
 
-        for (int i = 0; i < _lootOptions.Count; i++)
+        if (_lootCards != null)
         {
-            Item item = _lootOptions[i];
-            Rectangle rect = _lootRects[i];
-            
-            _spriteBatch.Draw(_pixel, rect, Color.DarkSlateGray);
-            _spriteBatch.Draw(_pixel, new Rectangle(rect.X, rect.Y, rect.Width, 2), item.GetRarityColor());
-            _spriteBatch.Draw(_pixel, new Rectangle(rect.X, rect.Bottom, rect.Width, 2), item.GetRarityColor());
-            _spriteBatch.Draw(_pixel, new Rectangle(rect.X, rect.Y, 2, rect.Height), item.GetRarityColor());
-            _spriteBatch.Draw(_pixel, new Rectangle(rect.Right, rect.Y, 2, rect.Height + 2), item.GetRarityColor());
-
-            if (_font != null)
-            {
-                string name = item.Name;
-                if (name.Length > 15) name = name.Substring(0, 12) + "...";
-                
-                _spriteBatch.DrawString(_font, name, new Vector2(rect.X + 10, rect.Y + 20), item.GetRarityColor());
-                
-                string stats = "";
-                if (item.BaseStr > 0) stats += $"+{item.BaseStr} STR\n";
-                if (item.BaseDex > 0) stats += $"+{item.BaseDex} DEX\n";
-                if (item.BaseInt > 0) stats += $"+{item.BaseInt} INT\n";
-                if (item.DiceType != DiceType.None) stats += $"Dice: {item.DiceType}\n";
-                
-                _spriteBatch.DrawString(_font, stats, new Vector2(rect.X + 10, rect.Y + 60), Color.White);
-                
-                _spriteBatch.DrawString(_font, item.Rarity.ToString(), new Vector2(rect.X + 10, rect.Bottom - 30), item.GetRarityColor());
-            }
+            foreach (var card in _lootCards) card.Draw(_spriteBatch);
         }
     }
 
@@ -1339,11 +1468,11 @@ public class CoreGame : Game
             
             _spriteBatch.Draw(_texLogo, new Rectangle(logoX, 50, logoWidth, logoHeight), Color.White);
         }
-        else if (_titleFont != null)
+        else if (_alagardFont != null)
         {
             string title = "PROJECT BACKPACK DUNGEON";
-            Vector2 titleSize = _titleFont.MeasureString(title);
-            _spriteBatch.DrawString(_titleFont, title, new Vector2((VirtualWidth - titleSize.X)/2, 200), Color.Gold);
+            Vector2 titleSize = _alagardFont.MeasureString(title);
+            _spriteBatch.DrawString(_alagardFont, title, new Vector2((VirtualWidth - titleSize.X)/2, 200), Color.Gold);
         }
         
         foreach (var btn in _titleButtons) btn.Draw(_spriteBatch);
@@ -1351,11 +1480,11 @@ public class CoreGame : Game
 
     private void DrawSlotSelection()
     {
-        if (_titleFont != null)
+        if (_alagardFont != null)
         {
             string title = "SELECT SAVE SLOT";
-            Vector2 titleSize = _titleFont.MeasureString(title);
-            _spriteBatch.DrawString(_titleFont, title, new Vector2((VirtualWidth - titleSize.X)/2, 100), Color.White);
+            Vector2 titleSize = _alagardFont.MeasureString(title);
+            _spriteBatch.DrawString(_alagardFont, title, new Vector2((VirtualWidth - titleSize.X)/2, 100), Color.White);
         }
 
         foreach (var btn in _slotButtons) btn.Draw(_spriteBatch);
@@ -1365,11 +1494,11 @@ public class CoreGame : Game
 
     private void DrawClassSelection()
     {
-        if (_titleFont != null)
+        if (_alagardFont != null)
         {
             string title = "CHOOSE YOUR CLASS";
-            Vector2 titleSize = _titleFont.MeasureString(title);
-            _spriteBatch.DrawString(_titleFont, title, new Vector2((VirtualWidth - titleSize.X)/2, 100), Color.White);
+            Vector2 titleSize = _alagardFont.MeasureString(title);
+            _spriteBatch.DrawString(_alagardFont, title, new Vector2((VirtualWidth - titleSize.X)/2, 100), Color.White);
         }
 
         foreach (var btn in _classButtons) btn.Draw(_spriteBatch);
@@ -1378,11 +1507,11 @@ public class CoreGame : Game
     
     private void DrawOptions()
     {
-        if (_titleFont != null)
+        if (_alagardFont != null)
         {
             string title = "OPTIONS";
-            Vector2 titleSize = _titleFont.MeasureString(title);
-            _spriteBatch.DrawString(_titleFont, title, new Vector2((VirtualWidth - titleSize.X)/2, 100), Color.White);
+            Vector2 titleSize = _alagardFont.MeasureString(title);
+            _spriteBatch.DrawString(_alagardFont, title, new Vector2((VirtualWidth - titleSize.X)/2, 100), Color.White);
         }
 
         foreach (var btn in _optionButtons) btn.Draw(_spriteBatch);
@@ -1400,9 +1529,31 @@ public class CoreGame : Game
         DrawLayout();
         
         _infoPanel.Draw(_spriteBatch); 
-        if (_currentEnemy != null) _currentEnemy.Draw(_spriteBatch);
-        _diceManager.Draw(_spriteBatch); 
-        _hudOverlay.Draw(_spriteBatch); 
+        
+        if (_currentState == GameState.Playing || _currentState == GameState.GameOver)
+        {
+            if (_currentEnemy != null) _currentEnemy.Draw(_spriteBatch);
+            _diceManager.Draw(_spriteBatch); 
+            
+            bool canRoll = !_diceManager.IsRolling && !_waitingForNextRoom && !_waitingForNextFloor && _currentEnemy != null;
+            if (canRoll)
+            {
+                float pulse = (float)Math.Sin(_rollButtonTimer * 5f) * 0.1f + 1.0f;
+                _rollDiceButton.Draw(_spriteBatch);
+                string signal = "CLIQUEZ POUR ATTAQUER";
+                Vector2 sigSize = _alagardFont.MeasureString(signal);
+                _spriteBatch.DrawString(_alagardFont, signal, new Vector2(VirtualWidth/2 - sigSize.X/2, 750), Color.Gold * pulse);
+            }
+        }
+        else if (_currentState == GameState.Shop)
+        {
+            DrawShopInArena();
+        }
+        else if (_currentState == GameState.Event)
+        {
+            DrawEventInArena();
+        }
+
         _gameLog.Draw(_spriteBatch); 
         
         if (_skillButtons != null)
@@ -1419,11 +1570,11 @@ public class CoreGame : Game
         if (_currentState == GameState.GameOver)
         {
             _spriteBatch.Draw(_pixel, new Rectangle(0, 0, VirtualWidth, VirtualHeight), Color.Red * 0.3f);
-            if (_titleFont != null)
+            if (_alagardFont != null)
             {
                 string text = "GAME OVER";
-                Vector2 size = _titleFont.MeasureString(text);
-                _spriteBatch.DrawString(_titleFont, text, new Vector2((VirtualWidth - size.X)/2, (VirtualHeight - size.Y)/2), Color.White);
+                Vector2 size = _alagardFont.MeasureString(text);
+                _spriteBatch.DrawString(_alagardFont, text, new Vector2((VirtualWidth - size.X)/2, (VirtualHeight - size.Y)/2), Color.White);
             }
         }
 
@@ -1438,6 +1589,58 @@ public class CoreGame : Game
             (mouseState.Y - _destinationRectangle.Y) * scaleY
         );
         _inventoryGrid.Draw(_spriteBatch, mouseVirtualPos); 
+        
+        if (_alagardFont != null && _playerEffects.Count > 0)
+        {
+            string effectsText = "Effects: " + string.Join(", ", _playerEffects.Select(e => $"{e.Type}({e.Intensity})"));
+            _spriteBatch.DrawString(_alagardFont, effectsText, new Vector2(VirtualWidth/2 - 100, VirtualHeight - 150), Color.Yellow);
+        }
+
+        _hudOverlay.Draw(_spriteBatch); 
+    }
+
+    private void DrawShopInArena()
+    {
+        int sideWidth = (int)(VirtualWidth * 0.25f);
+        int centerWidth = VirtualWidth - (sideWidth * 2);
+        int centerX = sideWidth + centerWidth / 2;
+
+        string title = "MERCHANT";
+        Vector2 size = _alagardFont.MeasureString(title);
+        _spriteBatch.DrawString(_alagardFont, title, new Vector2(centerX - size.X/2, 100), Color.Gold);
+        
+        string gold = $"Your Gold: {_playerGold}";
+        _spriteBatch.DrawString(_alagardFont, gold, new Vector2(centerX - 50, 200), Color.Yellow);
+
+        _spriteBatch.Draw(_pixel, new Rectangle(centerX - 50, 250, 100, 150), Color.SaddleBrown);
+
+        foreach (var btn in _shopButtons) btn.Draw(_spriteBatch);
+    }
+
+    private void DrawEventInArena()
+    {
+        if (_currentEvent == null) return;
+        int sideWidth = (int)(VirtualWidth * 0.25f);
+        int centerWidth = VirtualWidth - (sideWidth * 2);
+        int centerX = sideWidth + centerWidth / 2;
+
+        string title = _currentEvent.Title;
+        Vector2 size = _alagardFont.MeasureString(title);
+        _spriteBatch.DrawString(_alagardFont, title, new Vector2(centerX - size.X/2, 100), Color.Cyan);
+        
+        Vector2 textSize = _alagardFont.MeasureString(_currentEvent.Description);
+        _spriteBatch.DrawString(_alagardFont, _currentEvent.Description, new Vector2(centerX - textSize.X / 2, 200), Color.White);
+
+        Color vColor = _currentEvent.Visual switch {
+            EventVisual.Fountain => Color.LightBlue,
+            EventVisual.Altar => Color.DarkRed,
+            EventVisual.Chest => Color.Gold,
+            EventVisual.Library => Color.BurlyWood,
+            _ => Color.Gray
+        };
+        _spriteBatch.Draw(_pixel, new Rectangle(centerX - 60, 280, 120, 120), vColor);
+
+        foreach (var btn in _eventButtons) btn.Draw(_spriteBatch);
     }
 
     private void DrawLayout()
